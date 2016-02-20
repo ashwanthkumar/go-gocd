@@ -38,7 +38,7 @@ func TestGetJobHistory(t *testing.T) {
 	assert.NotNil(t, job1)
 	assert.Equal(t, "278fb0b6-d3b8-47e1-9443-67f26bfb5c15", job1.AgentUUID)
 	assert.Equal(t, "job1", job1.Name)
-	assert.Equal(t, []string{}, job1.JobStateTransitions)
+	assert.Equal(t, []JobStateTransition{}, job1.JobStateTransitions)
 	assert.Equal(t, 1436519733253, job1.ScheduledDate)
 	assert.Equal(t, "", job1.OriginalJobID)
 	assert.Equal(t, 4, job1.PipelineCounter)

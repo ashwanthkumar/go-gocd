@@ -94,3 +94,21 @@ func (c *Client) DeleteAgent(uuid string) error {
 	multierror.Append(errors, errs...)
 	return errors.ErrorOrNil()
 }
+
+// AgentRunJobHistory - Lists the jobs that have executed on an agent.
+func (c *Client) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error) {
+	var errors *multierror.Error
+	_, body, errs := c.Request.
+		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).
+		Set("Accept", "application/vnd.go.cd.v2+json").
+		End()
+	multierror.Append(errors, errs...)
+
+	type JobHistoryResponse struct {
+		Jobs []*JobHistory `json:"jobs"`
+	}
+	var jobs *JobHistoryResponse
+	jsonErr := json.Unmarshal([]byte(body), &jobs)
+	multierror.Append(errors, jsonErr)
+	return jobs.Jobs, errors.ErrorOrNil()
+}

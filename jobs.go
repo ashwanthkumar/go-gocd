@@ -47,21 +47,28 @@ func (c *Client) GetScheduledJobs() ([]*ScheduledJob, error) {
 	return jobs.Jobs, errors.ErrorOrNil()
 }
 
-// JobHistory - Represents the
+// JobHistory - Represents an instance of a job from the past
 type JobHistory struct {
-	AgentUUID           string   `json:"agent_uuid"`
-	Name                string   `json:"name"`
-	JobStateTransitions []string `json:"job_state_transitions"`
-	ScheduledDate       int      `json:"scheduled_date"`
-	OriginalJobID       string   `json:"original_job_id"`
-	PipelineCounter     int      `json:"pipeline_counter"`
-	PipelineName        string   `json:"pipeline_name"`
-	Result              string   `json:"result"`
-	State               string   `json:"state"`
-	ID                  int      `json:"id"`
-	StageCounter        string   `json:"stage_counter"`
-	StageName           string   `json:"stage_name"`
-	ReRun               bool     `json:"rerun"`
+	AgentUUID           string               `json:"agent_uuid"`
+	Name                string               `json:"name"`
+	JobStateTransitions []JobStateTransition `json:"job_state_transitions"`
+	ScheduledDate       int                  `json:"scheduled_date"`
+	OriginalJobID       string               `json:"original_job_id"`
+	PipelineCounter     int                  `json:"pipeline_counter"`
+	PipelineName        string               `json:"pipeline_name"`
+	Result              string               `json:"result"`
+	State               string               `json:"state"`
+	ID                  int                  `json:"id"`
+	StageCounter        string               `json:"stage_counter"`
+	StageName           string               `json:"stage_name"`
+	ReRun               bool                 `json:"rerun"`
+}
+
+// JobStateTransition - Represents an instance of StateTransition the job went through
+type JobStateTransition struct {
+	StateChangeTime int    `json:"state_change_time,omitempty"`
+	ID              int    `json:"id,omitempty"`
+	State           string `json:"state,omitempty"`
 }
 
 // GetJobHistory - The job history allows users to list job instances of specified job. Supports pagination using offset which tells the API how many instances to skip.

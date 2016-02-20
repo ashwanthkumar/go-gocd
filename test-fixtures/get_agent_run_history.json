@@ -1,0 +1,30 @@
+{
+  "jobs": [
+    {
+      "agent_uuid": "5c5c318f-e6d3-4299-9120-7faff6e6030b",
+      "name": "upload",
+      "job_state_transitions": [
+        {
+          "state_change_time": 1435631497131,
+          "id": 539906,
+          "state": "Scheduled"
+        }
+      ],
+      "scheduled_date": 1435631497131,
+      "original_job_id": null,
+      "pipeline_counter": 251,
+      "rerun": false,
+      "pipeline_name": "distributions-all",
+      "result": "Passed",
+      "state": "Completed",
+      "id": 100129,
+      "stage_counter": "1",
+      "stage_name": "upload-installers"
+    }
+  ],
+  "pagination": {
+    "offset": 0,
+    "total": 1292,
+    "page_size": 10
+  }
+}
