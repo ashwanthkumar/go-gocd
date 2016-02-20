@@ -80,3 +80,17 @@ func (c *Client) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 	multierror.Append(errors, jsonErr)
 	return updatedAgent, errors.ErrorOrNil()
 }
+
+// DeleteAgent - Deletes an agent.
+// PS: You must first disable an agent and ensure that its status is not Building,
+// before attempting to deleting it.
+func (c *Client) DeleteAgent(uuid string) error {
+	var errors *multierror.Error
+
+	_, _, errs := c.Request.
+		Delete(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
+		Set("Accept", "application/vnd.go.cd.v2+json").
+		End()
+	multierror.Append(errors, errs...)
+	return errors.ErrorOrNil()
+}

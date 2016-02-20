@@ -70,3 +70,12 @@ func TestUpdateAgent(t *testing.T) {
 	assert.NotNil(t, updatedAgent)
 	assert.Equal(t, "agent02.example.com", updatedAgent.Hostname)
 }
+
+func TestDeleteAgent(t *testing.T) {
+	t.Parallel()
+
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", DummyRequestBodyValidator))
+	defer server.Close()
+	err := client.DeleteAgent("uuid")
+	assert.NoError(t, err)
+}
