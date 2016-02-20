@@ -25,7 +25,10 @@ type Agent struct {
 func (c *Client) GetAllAgents() ([]*Agent, error) {
 	var errors *multierror.Error
 
-	_, body, errs := c.Request.Get(c.resolve("/go/api/agents")).End()
+	_, body, errs := c.Request.
+		Get(c.resolve("/go/api/agents")).
+		Set("Accept", "application/vnd.go.cd.v2+json").
+		End()
 	multierror.Append(errors, errs...)
 
 	type EmbeddedObj struct {
