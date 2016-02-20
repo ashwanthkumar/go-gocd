@@ -1,0 +1,39 @@
+{
+  "jobs": [
+    {
+      "agent_uuid": null,
+      "name": "job1",
+      "job_state_transitions": [],
+      "scheduled_date": 1436519914378,
+      "original_job_id": null,
+      "pipeline_counter": 5,
+      "rerun": false,
+      "pipeline_name": "mypipeline",
+      "result": "Unknown",
+      "state": "Scheduled",
+      "id": 6,
+      "stage_counter": "1",
+      "stage_name": "defaultStage"
+    },
+    {
+      "agent_uuid": "278fb0b6-d3b8-47e1-9443-67f26bfb5c15",
+      "name": "job1",
+      "job_state_transitions": [],
+      "scheduled_date": 1436519733253,
+      "original_job_id": null,
+      "pipeline_counter": 4,
+      "rerun": false,
+      "pipeline_name": "mypipeline",
+      "result": "Passed",
+      "state": "Completed",
+      "id": 4,
+      "stage_counter": "1",
+      "stage_name": "defaultStage"
+    }
+  ],
+  "pagination": {
+    "offset": 0,
+    "total": 2,
+    "page_size": 10
+  }
+}

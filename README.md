@@ -59,9 +59,9 @@ func main() {
   - [ ] Cancel Stage
   - [ ] Get Stage instance
   - [ ] Get stage history
-- [ ] Jobs
+- [x] Jobs
   - [x] Get Scheduled Jobs
-  - [ ] Get Job history
+  - [x] Get Job history
 - [ ] Properties
   - [ ] Get all job Properties
   - [ ] Get one property
