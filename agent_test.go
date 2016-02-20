@@ -26,3 +26,21 @@ func TestGetAllAgents(t *testing.T) {
 	assert.Equal(t, []string{"java", "linux", "firefox"}, agent1.Resources)
 	assert.Equal(t, []string{"perf", "UAT"}, agent1.Env)
 }
+
+func TestGetAgent(t *testing.T) {
+	client := newTestClient(t)
+	agent, err := client.GetAgent("uuid")
+	assert.NoError(t, err)
+	assert.NotNil(t, agent)
+	assert.Equal(t, "adb9540a-b954-4571-9d9b-2f330739d4da", agent.UUID)
+	assert.Equal(t, "ketanpkr.corporate.thoughtworks.com", agent.Hostname)
+	assert.Equal(t, "10.12.20.47", agent.IPAddress)
+	assert.Equal(t, "/Users/ketanpadegaonkar/projects/gocd/gocd/agent", agent.Sandbox)
+	assert.Equal(t, "Mac OS X", agent.OperatingSystem)
+	assert.Equal(t, 85890146304, agent.FreeSpace)
+	assert.Equal(t, "Enabled", agent.AgentConfigState)
+	assert.Equal(t, "Idle", agent.AgentState)
+	assert.Equal(t, "Idle", agent.BuildState)
+	assert.Equal(t, []string{"java", "linux", "firefox"}, agent.Resources)
+	assert.Equal(t, []string{"perf", "UAT"}, agent.Env)
+}

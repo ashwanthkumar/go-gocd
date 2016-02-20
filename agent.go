@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"encoding/json"
+	"fmt"
 
 	multierror "github.com/hashicorp/go-multierror"
 )
@@ -42,4 +43,21 @@ func (c *Client) GetAllAgents() ([]*Agent, error) {
 	jsonErr := json.Unmarshal([]byte(body), &responseFormat)
 	multierror.Append(errors, jsonErr)
 	return responseFormat.Embedded.Agents, errors.ErrorOrNil()
+}
+
+// GetAgent - Gets an agent by its unique identifier (uuid)
+func (c *Client) GetAgent(uuid string) (*Agent, error) {
+	var errors *multierror.Error
+
+	_, body, errs := c.Request.
+		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
+		Set("Accept", "application/vnd.go.cd.v2+json").
+		End()
+	multierror.Append(errors, errs...)
+
+	var agent *Agent
+
+	jsonErr := json.Unmarshal([]byte(body), &agent)
+	multierror.Append(errors, jsonErr)
+	return agent, errors.ErrorOrNil()
 }

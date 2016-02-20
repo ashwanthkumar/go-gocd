@@ -18,9 +18,14 @@ func newTestClient(t *testing.T) *Client {
 	once.Do(func() {
 		testServerHandler := http.NewServeMux()
 		// TODO - Add more handlers here as we implement more functionalities of the client
+		// Agents
 		testServerHandler.HandleFunc("/go/api/agents", serveFileAsJSON(t, "test-fixtures/get_all_agents.json"))
+		testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "test-fixtures/get_agent.json"))
+
+		// Jobs
 		testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "test-fixtures/get_scheduled_jobs.xml"))
 		testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "test-fixtures/get_job_history.json"))
+
 		apiServer = httptest.NewServer(testServerHandler)
 	})
 
