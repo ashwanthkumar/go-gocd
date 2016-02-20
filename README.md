@@ -22,8 +22,8 @@ func main() {
 
 ## API Endpoints Pending
 - [ ] Agents
--- [x] Get all Agents
--- [ ] Get one Agent
--- [ ] Update an Agent
--- [ ] Delete an Agent
--- [ ] Agent job run history
+  - [x] Get all Agents
+  - [ ] Get one Agent
+  - [ ] Update an Agent
+  - [ ] Delete an Agent
+  - [ ] Agent job run history
