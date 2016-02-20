@@ -25,9 +25,8 @@ func newTestClient(t *testing.T) *Client {
 		// TODO - Add more handlers here as we implement more functionalities of the client
 
 		// Jobs
-		testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
-		testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", DummyRequestBodyValidator))
-
+		// testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
+		// testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", DummyRequestBodyValidator))
 		apiServer = httptest.NewServer(testServerHandler)
 	})
 
