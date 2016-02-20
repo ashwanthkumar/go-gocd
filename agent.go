@@ -9,17 +9,17 @@ import (
 
 // Agent Object
 type Agent struct {
-	UUID             string   `json:"uuid"`
-	Hostname         string   `json:"hostname"`
-	IPAddress        string   `json:"ip_address"`
-	Sandbox          string   `json:"sandbox"`
-	OperatingSystem  string   `json:"operating_system"`
-	FreeSpace        int      `json:"free_space"`
-	AgentConfigState string   `json:"agent_config_state"`
-	AgentState       string   `json:"agent_state"`
-	BuildState       string   `json:"build_state"`
-	Resources        []string `json:"resources"`
-	Env              []string `json:"environments"`
+	UUID             string   `json:"uuid,omitempty"`
+	Hostname         string   `json:"hostname,omitempty"`
+	IPAddress        string   `json:"ip_address,omitempty"`
+	Sandbox          string   `json:"sandbox,omitempty"`
+	OperatingSystem  string   `json:"operating_system,omitempty"`
+	FreeSpace        int      `json:"free_space,omitempty"`
+	AgentConfigState string   `json:"agent_config_state,omitempty"`
+	AgentState       string   `json:"agent_state,omitempty"`
+	BuildState       string   `json:"build_state,omitempty"`
+	Resources        []string `json:"resources,omitempty"`
+	Env              []string `json:"environments,omitempty"`
 }
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
@@ -60,4 +60,23 @@ func (c *Client) GetAgent(uuid string) (*Agent, error) {
 	jsonErr := json.Unmarshal([]byte(body), &agent)
 	multierror.Append(errors, jsonErr)
 	return agent, errors.ErrorOrNil()
+}
+
+// UpdateAgent - Update some attributes of an agent (uuid).
+// Returns the updated agent properties
+func (c *Client) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
+	var errors *multierror.Error
+
+	_, body, errs := c.Request.
+		Patch(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
+		Set("Accept", "application/vnd.go.cd.v2+json").
+		SendStruct(agent).
+		End()
+	multierror.Append(errors, errs...)
+
+	var updatedAgent *Agent
+
+	jsonErr := json.Unmarshal([]byte(body), &updatedAgent)
+	multierror.Append(errors, jsonErr)
+	return updatedAgent, errors.ErrorOrNil()
 }

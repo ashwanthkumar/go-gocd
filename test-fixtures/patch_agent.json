@@ -1,0 +1,24 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://ci.example.com/go/api/agents/adb9540a-b954-4571-9d9b-2f330739d4da"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#agents"
+    },
+    "find": {
+      "href": "https://ci.example.com/go/api/agents/:uuid"
+    }
+  },
+  "uuid": "adb9540a-b954-4571-9d9b-2f330739d4da",
+  "hostname": "agent02.example.com",
+  "ip_address": "10.12.20.47",
+  "sandbox": "/Users/ketanpadegaonkar/projects/gocd/gocd/agent",
+  "operating_system": "Mac OS X",
+  "free_space": 84834283520,
+  "agent_config_state": "Enabled",
+  "agent_state": "Idle",
+  "build_state": "Idle",
+  "resources": ["java","linux"],
+  "environments": []
+}

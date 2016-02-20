@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"sync"
@@ -9,22 +10,29 @@ import (
 )
 
 var once sync.Once
+var newAPIServerOnce sync.Once
 var apiServer *httptest.Server
+var newAPIServer *httptest.Server
 
 const testUsername = "admin"
 const testPassword = "badger"
+
+func DummyRequestBodyValidator(body string) error {
+	return nil
+}
 
 func newTestClient(t *testing.T) *Client {
 	once.Do(func() {
 		testServerHandler := http.NewServeMux()
 		// TODO - Add more handlers here as we implement more functionalities of the client
 		// Agents
-		testServerHandler.HandleFunc("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json"))
-		testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json"))
+		testServerHandler.HandleFunc("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", DummyRequestBodyValidator))
+		testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", DummyRequestBodyValidator))
+		// testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", DummyRequestBodyValidator))
 
 		// Jobs
 		testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
-		testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json"))
+		testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", DummyRequestBodyValidator))
 
 		apiServer = httptest.NewServer(testServerHandler)
 	})
@@ -32,20 +40,37 @@ func newTestClient(t *testing.T) *Client {
 	return New(apiServer.URL, testUsername, testPassword)
 }
 
-func serveFileAsJSON(t *testing.T, method, filepath string) func(http.ResponseWriter, *http.Request) {
+// TODO - Migrate all instances to newTestClient2
+func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) *Client {
+	newAPIServerOnce.Do(func() {
+		newTestServerHandler := http.NewServeMux()
+		newTestServerHandler.HandleFunc(route, handler)
+		newAPIServer = httptest.NewServer(newTestServerHandler)
+	})
+
+	return New(newAPIServer.URL, testUsername, testPassword)
+}
+
+func serveFileAsJSON(t *testing.T, method string, filepath string, requestBodyValidator func(string) error) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		// log.Println("Doing AcceptHeaderCheck")
 		AcceptHeaderCheck(t, request)
+		// log.Println("Doing BasicAuthCheck")
 		BasicAuthCheck(t, request)
+		// log.Println("Doing RequestMethodCheck with " + method)
 		RequestMethodCheck(t, request, method)
+		// log.Println("Doing RequestBodyCheck")
+		RequestBodyCheck(t, request, requestBodyValidator)
 
 		contents, err := ioutil.ReadFile(filepath)
 		if err != nil {
-			t.Fatal(err)
+			log.Fatal(err)
 		}
 		writer.Header().Add("Content-Type", "application/vnd.go.cd.v2+json; charset=utf-8")
 		writer.Write(contents)
 	}
 }
+
 func serveFileAsXML(t *testing.T, method, filepath string) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		BasicAuthCheck(t, request)
@@ -53,7 +78,7 @@ func serveFileAsXML(t *testing.T, method, filepath string) func(http.ResponseWri
 
 		contents, err := ioutil.ReadFile(filepath)
 		if err != nil {
-			t.Fatal(err)
+			log.Fatal(err)
 		}
 		writer.Header().Add("Content-Type", "application/xml; charset=utf-8")
 		writer.Write(contents)
@@ -64,7 +89,7 @@ func AcceptHeaderCheck(t *testing.T, request *http.Request) {
 	// Accept Header check
 	acceptHeader := request.Header.Get("Accept")
 	if acceptHeader != "application/vnd.go.cd.v2+json" {
-		t.Fatal("We did not recieve Accept: application/vnd.go.cd.v2+json header in the request")
+		log.Fatalf("We did not recieve Accept: application/vnd.go.cd.v2+json header in the request")
 	}
 }
 
@@ -72,12 +97,22 @@ func BasicAuthCheck(t *testing.T, request *http.Request) {
 	// BasicAuth check
 	username, password, _ := request.BasicAuth()
 	if username != testUsername && password != testPassword {
-		t.Fatal("Invalid username / password combination")
+		log.Fatalf("Invalid username / password combination")
 	}
 }
 
 func RequestMethodCheck(t *testing.T, request *http.Request, method string) {
 	if request.Method != method {
-		t.Fatalf("Expected HTTP method is %s while client sent %s", method, request.Method)
+		log.Fatalf("Expected HTTP method is %s while client sent %s", method, request.Method)
+	}
+}
+
+func RequestBodyCheck(t *testing.T, request *http.Request, requestBodyValidator func(string) error) {
+	bytes, err := ioutil.ReadAll(request.Body)
+	// log.Printf("%v\n", request.Body)
+	if err != nil {
+		log.Fatalf("%v\n", err)
+	} else if err := requestBodyValidator(string(bytes)); err != nil {
+		log.Fatalf("%v\n", err)
 	}
 }

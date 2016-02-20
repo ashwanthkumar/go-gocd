@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,4 +44,23 @@ func TestGetAgent(t *testing.T) {
 	assert.Equal(t, "Idle", agent.BuildState)
 	assert.Equal(t, []string{"java", "linux", "firefox"}, agent.Resources)
 	assert.Equal(t, []string{"perf", "UAT"}, agent.Env)
+}
+
+func TestUpdateAgent(t *testing.T) {
+	requestBodyValidator := func(body string) error {
+		expectedBody := "{\"hostname\":\"agent02.example.com\"}"
+		if body != expectedBody {
+			return fmt.Errorf("Request body (%s) didn't match the expected body (%s)", body, expectedBody)
+		}
+		return nil
+	}
+
+	client := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", requestBodyValidator))
+	var agent = Agent{
+		Hostname: "agent02.example.com",
+	}
+	updatedAgent, err := client.UpdateAgent("uuid", &agent)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedAgent)
+	assert.Equal(t, "agent02.example.com", updatedAgent.Hostname)
 }
