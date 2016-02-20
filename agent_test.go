@@ -11,7 +11,6 @@ func TestGetAllAgents(t *testing.T) {
 	t.Parallel()
 	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", DummyRequestBodyValidator))
 	defer server.Close()
-	// client := newTestClient(t)
 	agents, err := client.GetAllAgents()
 	assert.NoError(t, err)
 	assert.NotNil(t, agents)
