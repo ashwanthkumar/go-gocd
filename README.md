@@ -24,8 +24,8 @@ func main() {
 - [ ] Agents
   - [x] Get all Agents
   - [x] Get one Agent
-  - [ ] Update an Agent
-  - [ ] Delete an Agent
+  - [x] Update an Agent
+  - [x] Delete an Agent
   - [ ] Agent job run history
 - [ ] Users
   - [ ] Get all Users
