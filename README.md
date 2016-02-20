@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/ashwanthkumar/go-gocd?status.svg)](https://godoc.org/github.com/ashwanthkumar/go-gocd)
+
 # go-gocd
 
 Go Lang library to access [GoCD API](https://api.go.cd/current/).
