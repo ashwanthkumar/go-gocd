@@ -8,7 +8,10 @@ import (
 )
 
 func TestGetAllAgents(t *testing.T) {
-	client := newTestClient(t)
+	t.Parallel()
+	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", DummyRequestBodyValidator))
+	defer server.Close()
+	// client := newTestClient(t)
 	agents, err := client.GetAllAgents()
 	assert.NoError(t, err)
 	assert.NotNil(t, agents)
@@ -29,7 +32,9 @@ func TestGetAllAgents(t *testing.T) {
 }
 
 func TestGetAgent(t *testing.T) {
-	client := newTestClient(t)
+	t.Parallel()
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", DummyRequestBodyValidator))
+	defer server.Close()
 	agent, err := client.GetAgent("uuid")
 	assert.NoError(t, err)
 	assert.NotNil(t, agent)
@@ -47,6 +52,7 @@ func TestGetAgent(t *testing.T) {
 }
 
 func TestUpdateAgent(t *testing.T) {
+	t.Parallel()
 	requestBodyValidator := func(body string) error {
 		expectedBody := "{\"hostname\":\"agent02.example.com\"}"
 		if body != expectedBody {
@@ -55,7 +61,8 @@ func TestUpdateAgent(t *testing.T) {
 		return nil
 	}
 
-	client := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", requestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", requestBodyValidator))
+	defer server.Close()
 	var agent = Agent{
 		Hostname: "agent02.example.com",
 	}

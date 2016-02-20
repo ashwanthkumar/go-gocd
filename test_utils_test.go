@@ -10,9 +10,7 @@ import (
 )
 
 var once sync.Once
-var newAPIServerOnce sync.Once
 var apiServer *httptest.Server
-var newAPIServer *httptest.Server
 
 const testUsername = "admin"
 const testPassword = "badger"
@@ -25,10 +23,6 @@ func newTestClient(t *testing.T) *Client {
 	once.Do(func() {
 		testServerHandler := http.NewServeMux()
 		// TODO - Add more handlers here as we implement more functionalities of the client
-		// Agents
-		testServerHandler.HandleFunc("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", DummyRequestBodyValidator))
-		testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", DummyRequestBodyValidator))
-		// testServerHandler.HandleFunc("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", DummyRequestBodyValidator))
 
 		// Jobs
 		testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
@@ -41,14 +35,12 @@ func newTestClient(t *testing.T) *Client {
 }
 
 // TODO - Migrate all instances to newTestClient2
-func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) *Client {
-	newAPIServerOnce.Do(func() {
-		newTestServerHandler := http.NewServeMux()
-		newTestServerHandler.HandleFunc(route, handler)
-		newAPIServer = httptest.NewServer(newTestServerHandler)
-	})
+func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) (*Client, *httptest.Server) {
+	newTestServerHandler := http.NewServeMux()
+	newTestServerHandler.HandleFunc(route, handler)
+	newAPIServer := httptest.NewServer(newTestServerHandler)
 
-	return New(newAPIServer.URL, testUsername, testPassword)
+	return New(newAPIServer.URL, testUsername, testPassword), newAPIServer
 }
 
 func serveFileAsJSON(t *testing.T, method string, filepath string, requestBodyValidator func(string) error) func(http.ResponseWriter, *http.Request) {
