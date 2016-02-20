@@ -21,12 +21,12 @@ func main() {
 ```
 
 ## API Endpoints Pending
-- [ ] Agents
+- [x] Agents
   - [x] Get all Agents
   - [x] Get one Agent
   - [x] Update an Agent
   - [x] Delete an Agent
-  - [ ] Agent job run history
+  - [x] Agent job run history
 - [ ] Users
   - [ ] Get all Users
   - [ ] Get one user
