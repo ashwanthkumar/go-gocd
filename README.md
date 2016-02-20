@@ -60,7 +60,7 @@ func main() {
   - [ ] Get Stage instance
   - [ ] Get stage history
 - [ ] Jobs
-  - [ ] Get Scheduled Jobs
+  - [x] Get Scheduled Jobs
   - [ ] Get Job history
 - [ ] Properties
   - [ ] Get all job Properties
