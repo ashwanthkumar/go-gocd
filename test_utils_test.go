@@ -19,6 +19,7 @@ func newTestClient(t *testing.T) *Client {
 		testServerHandler := http.NewServeMux()
 		// TODO - Add more handlers here as we implement more functionalities of the client
 		testServerHandler.HandleFunc("/go/api/agents", serveFileAsJSON(t, "test-fixtures/get_all_agents.json"))
+		testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "test-fixtures/get_scheduled_jobs.xml"))
 		apiServer = httptest.NewServer(testServerHandler)
 	})
 
@@ -35,6 +36,18 @@ func serveFileAsJSON(t *testing.T, filepath string) func(http.ResponseWriter, *h
 			t.Fatal(err)
 		}
 		writer.Header().Add("Content-Type", "application/vnd.go.cd.v2+json; charset=utf-8")
+		writer.Write(contents)
+	}
+}
+func serveFileAsXML(t *testing.T, filepath string) func(http.ResponseWriter, *http.Request) {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		BasicAuthCheck(t, request)
+
+		contents, err := ioutil.ReadFile(filepath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		writer.Header().Add("Content-Type", "application/xml; charset=utf-8")
 		writer.Write(contents)
 	}
 }

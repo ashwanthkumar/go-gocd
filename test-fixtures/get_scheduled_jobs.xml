@@ -1,0 +1,10 @@
+<scheduledJobs>
+  <job name="job1" id="6">
+    <link rel="self" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job1"/>
+    <buildLocator>mypipeline/5/defaultStage/1/job1</buildLocator>
+  </job>
+  <job name="job2" id="7">
+    <link rel="self" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job2"/>
+    <buildLocator>mypipeline/5/defaultStage/1/job2</buildLocator>
+  </job>
+</scheduledJobs>
