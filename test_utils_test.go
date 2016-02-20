@@ -5,12 +5,8 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"sync"
 	"testing"
 )
-
-var once sync.Once
-var apiServer *httptest.Server
 
 const testUsername = "admin"
 const testPassword = "badger"
@@ -19,21 +15,6 @@ func DummyRequestBodyValidator(body string) error {
 	return nil
 }
 
-func newTestClient(t *testing.T) *Client {
-	once.Do(func() {
-		testServerHandler := http.NewServeMux()
-		// TODO - Add more handlers here as we implement more functionalities of the client
-
-		// Jobs
-		// testServerHandler.HandleFunc("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
-		// testServerHandler.HandleFunc("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", DummyRequestBodyValidator))
-		apiServer = httptest.NewServer(testServerHandler)
-	})
-
-	return New(apiServer.URL, testUsername, testPassword)
-}
-
-// TODO - Migrate all instances to newTestClient2
 func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) (*Client, *httptest.Server) {
 	newTestServerHandler := http.NewServeMux()
 	newTestServerHandler.HandleFunc(route, handler)
