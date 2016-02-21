@@ -58,6 +58,9 @@ func (c *Client) GetScheduledJobs() ([]*ScheduledJob, error) {
 		Get(c.resolve("/go/api/jobs/scheduled.xml")).
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return []*ScheduledJob{}, errors.ErrorOrNil()
+	}
 	xmlErr := xml.Unmarshal([]byte(body), &jobs)
 	multierror.Append(errors, xmlErr)
 
@@ -96,6 +99,9 @@ func (c *Client) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobH
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return []*JobHistory{}, errors.ErrorOrNil()
+	}
 
 	type JobHistoryResponse struct {
 		Jobs []*JobHistory `json:"jobs"`

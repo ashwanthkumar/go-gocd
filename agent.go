@@ -31,6 +31,9 @@ func (c *Client) GetAllAgents() ([]*Agent, error) {
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return []*Agent{}, errors.ErrorOrNil()
+	}
 
 	type EmbeddedObj struct {
 		Agents []*Agent `json:"agents"`
@@ -54,6 +57,9 @@ func (c *Client) GetAgent(uuid string) (*Agent, error) {
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return nil, errors.ErrorOrNil()
+	}
 
 	var agent *Agent
 
@@ -73,6 +79,9 @@ func (c *Client) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 		SendStruct(agent).
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return nil, errors.ErrorOrNil()
+	}
 
 	var updatedAgent *Agent
 
@@ -103,6 +112,9 @@ func (c *Client) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, err
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
 	multierror.Append(errors, errs...)
+	if errs != nil {
+		return []*JobHistory{}, errors.ErrorOrNil()
+	}
 
 	type JobHistoryResponse struct {
 		Jobs []*JobHistory `json:"jobs"`
