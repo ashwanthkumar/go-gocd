@@ -20,7 +20,17 @@ type ScheduledJob struct {
 	BuildLocator string                 `xml:"buildLocator"`
 	Link         LinkInXML              `xml:"link"`
 	Environment  string                 `xml:"environment,omitempty"`
-	Resources    []ScheduledJobResource `xml:"resources>resource,omitempty"`
+	RawResources []ScheduledJobResource `xml:"resources>resource,omitempty"`
+}
+
+// Resources - return resources as []string
+func (sj *ScheduledJob) Resources() []string {
+	stringSlice := make([]string, len(sj.RawResources))
+	for index, resource := range sj.RawResources {
+		stringSlice[index] = resource.Name
+	}
+
+	return stringSlice
 }
 
 // JobURL - Full URL location of the scheduled job

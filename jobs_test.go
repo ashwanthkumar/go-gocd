@@ -30,7 +30,7 @@ func TestGetScheduledJobs(t *testing.T) {
 	assert.Equal(t, []ScheduledJobResource{
 		ScheduledJobResource{Name: "FT"},
 		ScheduledJobResource{Name: "FIREFOX"},
-	}, job2.Resources)
+	}, job2.RawResources)
 }
 
 func TestGetJobHistory(t *testing.T) {
