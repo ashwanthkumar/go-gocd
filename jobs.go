@@ -8,12 +8,19 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
+// ScheduledJobResource wrapper for resources > resource
+type ScheduledJobResource struct {
+	Name string `xml:",chardata"`
+}
+
 // ScheduledJob instance
 type ScheduledJob struct {
-	Name         string    `xml:"name,attr"`
-	JobID        string    `xml:"id,attr"`
-	BuildLocator string    `xml:"buildLocator"`
-	Link         LinkInXML `xml:"link"`
+	Name         string                 `xml:"name,attr"`
+	JobID        string                 `xml:"id,attr"`
+	BuildLocator string                 `xml:"buildLocator"`
+	Link         LinkInXML              `xml:"link"`
+	Environment  string                 `xml:"environment,omitempty"`
+	Resources    []ScheduledJobResource `xml:"resources>resource,omitempty"`
 }
 
 // JobURL - Full URL location of the scheduled job

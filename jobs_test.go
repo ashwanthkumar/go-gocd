@@ -24,6 +24,13 @@ func TestGetScheduledJobs(t *testing.T) {
 	assert.Equal(t, "6", job1.JobID)
 	assert.Equal(t, "mypipeline/5/defaultStage/1/job1", job1.BuildLocator)
 	assert.Equal(t, "https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job1", job1.JobURL())
+
+	job2 := jobs[1]
+	assert.Equal(t, "FT", job2.Environment)
+	assert.Equal(t, []ScheduledJobResource{
+		ScheduledJobResource{Name: "FT"},
+		ScheduledJobResource{Name: "FIREFOX"},
+	}, job2.Resources)
 }
 
 func TestGetJobHistory(t *testing.T) {
