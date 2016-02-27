@@ -99,6 +99,15 @@ func (c *Client) DisableAgent(uuid string) error {
 	return err
 }
 
+// EnableAgent - Enables an agent using it's UUID
+func (c *Client) EnableAgent(uuid string) error {
+	var agent = &Agent{
+		AgentConfigState: "Enabled",
+	}
+	_, err := c.UpdateAgent(uuid, agent)
+	return err
+}
+
 // DeleteAgent - Deletes an agent.
 // PS: You must first disable an agent and ensure that its status is not Building,
 // before attempting to deleting it.
