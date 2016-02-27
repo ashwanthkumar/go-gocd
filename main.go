@@ -1,6 +1,10 @@
 package gocd
 
-import "github.com/parnurzeal/gorequest"
+import (
+	"time"
+
+	"github.com/parnurzeal/gorequest"
+)
 
 // Client entrypoint for GoCD
 type Client struct {
@@ -12,7 +16,7 @@ type Client struct {
 func New(host, username, password string) *Client {
 	client := Client{
 		Host:    host,
-		Request: gorequest.New().SetBasicAuth(username, password),
+		Request: gorequest.New().Timeout(60*time.Second).SetBasicAuth(username, password),
 	}
 	return &client
 }
