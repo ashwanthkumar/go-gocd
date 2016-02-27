@@ -57,12 +57,12 @@ func (c *Client) GetScheduledJobs() ([]*ScheduledJob, error) {
 	_, body, errs := c.Request.
 		Get(c.resolve("/go/api/jobs/scheduled.xml")).
 		End()
-	multierror.Append(errors, errs...)
+	errors = multierror.Append(errors, errs...)
 	if errs != nil {
 		return []*ScheduledJob{}, errors.ErrorOrNil()
 	}
 	xmlErr := xml.Unmarshal([]byte(body), &jobs)
-	multierror.Append(errors, xmlErr)
+	errors = multierror.Append(errors, xmlErr)
 
 	return jobs.Jobs, errors.ErrorOrNil()
 }
@@ -98,7 +98,7 @@ func (c *Client) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobH
 		Get(c.resolve(fmt.Sprintf("/go/api/jobs/%s/%s/%s/history/%d", pipeline, stage, job, offset))).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	multierror.Append(errors, errs...)
+	errors = multierror.Append(errors, errs...)
 	if errs != nil {
 		return []*JobHistory{}, errors.ErrorOrNil()
 	}
@@ -108,6 +108,6 @@ func (c *Client) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobH
 	}
 	var jobs *JobHistoryResponse
 	jsonErr := json.Unmarshal([]byte(body), &jobs)
-	multierror.Append(errors, jsonErr)
+	errors = multierror.Append(errors, jsonErr)
 	return jobs.Jobs, errors.ErrorOrNil()
 }
