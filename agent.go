@@ -9,12 +9,12 @@ import (
 
 // Agent Object
 type Agent struct {
-	UUID             string   `json:"uuid,omitempty"`
-	Hostname         string   `json:"hostname,omitempty"`
-	IPAddress        string   `json:"ip_address,omitempty"`
-	Sandbox          string   `json:"sandbox,omitempty"`
-	OperatingSystem  string   `json:"operating_system,omitempty"`
-	FreeSpace        int      `json:"free_space,omitempty"`
+	UUID            string `json:"uuid,omitempty"`
+	Hostname        string `json:"hostname,omitempty"`
+	IPAddress       string `json:"ip_address,omitempty"`
+	Sandbox         string `json:"sandbox,omitempty"`
+	OperatingSystem string `json:"operating_system,omitempty"`
+	// FreeSpace        int      `json:"free_space,string,omitempty"` - There's inconsistency on how this field is being returned in the API
 	AgentConfigState string   `json:"agent_config_state,omitempty"`
 	AgentState       string   `json:"agent_state,omitempty"`
 	BuildState       string   `json:"build_state,omitempty"`
@@ -30,8 +30,8 @@ func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 		Get(c.resolve("/go/api/agents")).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	multierror.Append(errors, errs...)
 	if errs != nil {
+		errors = multierror.Append(errors, errs...)
 		return []*Agent{}, errors.ErrorOrNil()
 	}
 
@@ -44,7 +44,10 @@ func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 	var responseFormat *AllAgentsResponse
 
 	jsonErr := json.Unmarshal([]byte(body), &responseFormat)
-	multierror.Append(errors, jsonErr)
+	if jsonErr != nil {
+		errors = multierror.Append(errors, jsonErr)
+		return []*Agent{}, errors.ErrorOrNil()
+	}
 	return responseFormat.Embedded.Agents, errors.ErrorOrNil()
 }
 
@@ -56,7 +59,7 @@ func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	multierror.Append(errors, errs...)
+	errors = multierror.Append(errors, errs...)
 	if errs != nil {
 		return nil, errors.ErrorOrNil()
 	}
@@ -64,7 +67,9 @@ func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
 	var agent *Agent
 
 	jsonErr := json.Unmarshal([]byte(body), &agent)
-	multierror.Append(errors, jsonErr)
+	if jsonErr != nil {
+		errors = multierror.Append(errors, jsonErr)
+	}
 	return agent, errors.ErrorOrNil()
 }
 
@@ -86,7 +91,9 @@ func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 	var updatedAgent *Agent
 
 	jsonErr := json.Unmarshal([]byte(body), &updatedAgent)
-	multierror.Append(errors, jsonErr)
+	if jsonErr != nil {
+		errors = multierror.Append(errors, jsonErr)
+	}
 	return updatedAgent, errors.ErrorOrNil()
 }
 
@@ -118,7 +125,9 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 		Delete(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	multierror.Append(errors, errs...)
+	if errs != nil && len(errs) > 0 {
+		errors = multierror.Append(errors, errs...)
+	}
 	return errors.ErrorOrNil()
 }
 
@@ -129,8 +138,8 @@ func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHisto
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	multierror.Append(errors, errs...)
 	if errs != nil {
+		errors = multierror.Append(errors, errs...)
 		return []*JobHistory{}, errors.ErrorOrNil()
 	}
 
@@ -139,6 +148,9 @@ func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHisto
 	}
 	var jobs *JobHistoryResponse
 	jsonErr := json.Unmarshal([]byte(body), &jobs)
-	multierror.Append(errors, jsonErr)
+	if jsonErr != nil {
+		errors = multierror.Append(errors, jsonErr)
+		return []*JobHistory{}, errors.ErrorOrNil()
+	}
 	return jobs.Jobs, errors.ErrorOrNil()
 }
