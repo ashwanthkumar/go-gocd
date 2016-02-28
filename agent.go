@@ -23,7 +23,7 @@ type Agent struct {
 }
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
-func (c *Client) GetAllAgents() ([]*Agent, error) {
+func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 	var errors *multierror.Error
 
 	_, body, errs := c.Request.
@@ -49,7 +49,7 @@ func (c *Client) GetAllAgents() ([]*Agent, error) {
 }
 
 // GetAgent - Gets an agent by its unique identifier (uuid)
-func (c *Client) GetAgent(uuid string) (*Agent, error) {
+func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
 	var errors *multierror.Error
 
 	_, body, errs := c.Request.
@@ -70,7 +70,7 @@ func (c *Client) GetAgent(uuid string) (*Agent, error) {
 
 // UpdateAgent - Update some attributes of an agent (uuid).
 // Returns the updated agent properties
-func (c *Client) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
+func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 	var errors *multierror.Error
 
 	_, body, errs := c.Request.
@@ -91,7 +91,7 @@ func (c *Client) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 }
 
 // DisableAgent - Disables an agent using it's UUID
-func (c *Client) DisableAgent(uuid string) error {
+func (c *DefaultClient) DisableAgent(uuid string) error {
 	var agent = &Agent{
 		AgentConfigState: "Disabled",
 	}
@@ -100,7 +100,7 @@ func (c *Client) DisableAgent(uuid string) error {
 }
 
 // EnableAgent - Enables an agent using it's UUID
-func (c *Client) EnableAgent(uuid string) error {
+func (c *DefaultClient) EnableAgent(uuid string) error {
 	var agent = &Agent{
 		AgentConfigState: "Enabled",
 	}
@@ -111,7 +111,7 @@ func (c *Client) EnableAgent(uuid string) error {
 // DeleteAgent - Deletes an agent.
 // PS: You must first disable an agent and ensure that its status is not Building,
 // before attempting to deleting it.
-func (c *Client) DeleteAgent(uuid string) error {
+func (c *DefaultClient) DeleteAgent(uuid string) error {
 	var errors *multierror.Error
 
 	_, _, errs := c.Request.
@@ -123,7 +123,7 @@ func (c *Client) DeleteAgent(uuid string) error {
 }
 
 // AgentRunJobHistory - Lists the jobs that have executed on an agent.
-func (c *Client) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error) {
+func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error) {
 	var errors *multierror.Error
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).

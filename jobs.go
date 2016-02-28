@@ -34,8 +34,8 @@ func (sj *ScheduledJob) Resources() []string {
 }
 
 // JobURL - Full URL location of the scheduled job
-func (job *ScheduledJob) JobURL() string {
-	return job.Link.Href
+func (sj *ScheduledJob) JobURL() string {
+	return sj.Link.Href
 }
 
 // LinkInXML - <link rel="..." href="..."> tag
@@ -45,7 +45,7 @@ type LinkInXML struct {
 }
 
 // GetScheduledJobs - Lists all the current job instances which are scheduled but not yet assigned to any agent.
-func (c *Client) GetScheduledJobs() ([]*ScheduledJob, error) {
+func (c *DefaultClient) GetScheduledJobs() ([]*ScheduledJob, error) {
 	var errors *multierror.Error
 
 	type ScheduledJobsResponse struct {
@@ -94,7 +94,7 @@ type JobStateTransition struct {
 }
 
 // GetJobHistory - The job history allows users to list job instances of specified job. Supports pagination using offset which tells the API how many instances to skip.
-func (c *Client) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobHistory, error) {
+func (c *DefaultClient) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobHistory, error) {
 	var errors *multierror.Error
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/jobs/%s/%s/%s/history/%d", pipeline, stage, job, offset))).

@@ -15,7 +15,7 @@ func DummyRequestBodyValidator(body string) error {
 	return nil
 }
 
-func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) (*Client, *httptest.Server) {
+func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Request)) (Client, *httptest.Server) {
 	newTestServerHandler := http.NewServeMux()
 	newTestServerHandler.HandleFunc(route, handler)
 	newAPIServer := httptest.NewServer(newTestServerHandler)
