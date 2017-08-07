@@ -1,0 +1,58 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://ci.example.com/go/api/admin/environments/my_environment"
+    },
+    "doc": {
+      "href": "https://api.gocd.org/#environment-config"
+    },
+    "find": {
+      "href": "https://ci.example.com/go/api/admin/environments/:environment_name"
+    }
+  },
+  "name": "my_environment",
+  "pipelines": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://ci.example.com/go/api/admin/pipelines/up42"
+        },
+        "doc": {
+          "href": "https://api.gocd.org/#pipeline-config"
+        },
+        "find": {
+          "href": "https://ci.example.com/go/api/admin/pipelines/:pipeline_name"
+        }
+      },
+      "name": "up42"
+    }
+  ],
+  "agents": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://ci.example.com/go/api/agents/adb9540a-b954-4571-9d9b-2f330739d4da"
+        },
+        "doc": {
+          "href": "https://api.gocd.org/#agents"
+        },
+        "find": {
+          "href": "https://ci.example.com/go/api/agents/:uuid"
+        }
+      },
+      "uuid": "12345678-e2f6-4c78-123456789012"
+    }
+  ],
+  "environment_variables": [
+    {
+      "secure": false,
+      "name": "username",
+      "value": "admin"
+    },
+    {
+      "secure": true,
+      "name": "password",
+      "encrypted_value": "LSd1TI0eLa+DjytHjj0qjA=="
+    }
+  ]
+}
