@@ -80,3 +80,10 @@ func main() {
   - [ ] Get pipeline Configuration
   - [ ] Edit Pipeline configuration
   - [ ] Create Pipeline
+- [ ] Environment Config
+  - [x] Get all environments
+  - [x] Get environment config
+  - [ ] Create an environment
+  - [ ] Update an environment
+  - [ ] Patch an environment
+  - [ ] Delete an environment

@@ -6,7 +6,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
-// Client entrypoint for GoCD
+// DefaultClient entrypoint for GoCD
 type DefaultClient struct {
 	Host    string `json:"host"`
 	Request *gorequest.SuperAgent
