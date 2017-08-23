@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -23,10 +24,12 @@ func newTestAPIClient(route string, handler func(http.ResponseWriter, *http.Requ
 	return New(newAPIServer.URL, testUsername, testPassword), newAPIServer
 }
 
-func serveFileAsJSON(t *testing.T, method string, filepath string, requestBodyValidator func(string) error) func(http.ResponseWriter, *http.Request) {
+func serveFileAsJSON(t *testing.T, method string, filepath string, apiVersion int, requestBodyValidator func(string) error) func(http.ResponseWriter, *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// log.Println("Doing AcceptHeaderCheck")
-		AcceptHeaderCheck(t, request)
+		if apiVersion > 0 {
+			AcceptHeaderCheck(t, apiVersion, request)
+		}
 		// log.Println("Doing BasicAuthCheck")
 		BasicAuthCheck(t, request)
 		// log.Println("Doing RequestMethodCheck with " + method)
@@ -38,7 +41,9 @@ func serveFileAsJSON(t *testing.T, method string, filepath string, requestBodyVa
 		if err != nil {
 			log.Fatal(err)
 		}
-		writer.Header().Add("Content-Type", "application/vnd.go.cd.v2+json; charset=utf-8")
+		if apiVersion > 0 {
+			writer.Header().Add("Content-Type", fmt.Sprintf("application/vnd.go.cd.v%d+json; charset=utf-8", apiVersion))
+		}
 		writer.Write(contents)
 	}
 }
@@ -57,11 +62,11 @@ func serveFileAsXML(t *testing.T, method, filepath string) func(http.ResponseWri
 	}
 }
 
-func AcceptHeaderCheck(t *testing.T, request *http.Request) {
+func AcceptHeaderCheck(t *testing.T, apiVersion int, request *http.Request) {
 	// Accept Header check
 	acceptHeader := request.Header.Get("Accept")
-	if acceptHeader != "application/vnd.go.cd.v2+json" {
-		log.Fatalf("We did not recieve Accept: application/vnd.go.cd.v2+json header in the request")
+	if acceptHeader != fmt.Sprintf("application/vnd.go.cd.v%d+json", apiVersion) {
+		log.Fatalf("We did not recieve Accept: application/vnd.go.cd.v%d+json header in the request", apiVersion)
 	}
 }
 

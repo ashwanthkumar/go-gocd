@@ -1,0 +1,23 @@
+[
+  {
+    "pipelines": [
+      {
+        "stages": [
+          {
+            "name": "up42_stage"
+          }
+        ],
+        "name": "up42",
+        "materials": [
+          {
+            "description": "URL: https://github.com/gocd/gocd, Branch: master",
+            "fingerprint": "2d05446cd52a998fe3afd840fc2c46b7c7e421051f0209c7f619c95bedc28b88",
+            "type": "Git"
+          }
+        ],
+        "label": "${COUNT}"
+      }
+    ],
+    "name": "first"
+  }
+]
