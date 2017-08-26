@@ -11,6 +11,9 @@ type Client interface {
 	DeleteAgent(uuid string) error
 	AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error)
 
+	// Pipeline Groups API
+	GetPipelineGroups() ([]*PipelineGroup, error)
+
 	// Jobs API
 	GetScheduledJobs() ([]*ScheduledJob, error)
 	GetJobHistory(pipeline, stage, job string, offset int) ([]*JobHistory, error)
