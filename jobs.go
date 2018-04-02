@@ -8,6 +8,15 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
+// Job definition used also by other elements like the pipeline and stages
+type Job struct {
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	Result        string `json:"result"`
+	State         string `json:"state"`
+	ScheduledDate int64  `json:"scheduled_date"`
+}
+
 // ScheduledJobResource wrapper for resources > resource
 type ScheduledJobResource struct {
 	Name string `xml:",chardata"`

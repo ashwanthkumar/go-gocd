@@ -50,7 +50,7 @@ func main() {
   - [ ] Create artifact
   - [ ] Append to artifact
 - [ ] Pipelines
-  - [ ] Get pipeline instance
+  - [X] Get pipeline instance
   - [ ] Get pipeline status
   - [ ] Pause a pipeline
   - [ ] Unpause a pipeline
