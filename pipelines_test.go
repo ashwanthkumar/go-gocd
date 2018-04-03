@@ -62,3 +62,17 @@ func TestGetPipelineHistoryPage(t *testing.T) {
 	assert.Equal(t, 1, len(rev.Modifications))
 	assert.Equal(t, "my hola mundo changes", rev.Modifications[0].Comment)
 }
+
+func TestGetPipelineStatus(t *testing.T) {
+	t.Parallel()
+	client, server := newTestAPIClient("/go/api/pipelines/pipeline1/status", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_status.json", 0, DummyRequestBodyValidator))
+	defer server.Close()
+
+	s, err := client.GetPipelineStatus("pipeline1")
+	assert.NoError(t, err)
+	assert.Equal(t, "Reason for pausing this pipeline", s.PausedCause)
+	assert.Equal(t, "admin", s.PausedBy)
+	assert.Equal(t, true, s.Paused)
+	assert.Equal(t, false, s.Schedulable)
+	assert.Equal(t, false, s.Locked)
+}

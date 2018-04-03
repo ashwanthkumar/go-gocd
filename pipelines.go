@@ -32,6 +32,15 @@ type PipelineHistoryPage struct {
 	Pagination Pagination         `json:"pagination"`
 }
 
+// PipelineStatus represents the status of a pipeline
+type PipelineStatus struct {
+	PausedCause string `json:"pausedCause"`
+	PausedBy    string `json:"pausedBy"`
+	Paused      bool   `json:"paused"`
+	Schedulable bool   `json:"schedulable"`
+	Locked      bool   `json:"locked"`
+}
+
 // GetPipelineInstance returns the pipeline instance corresponding to the given
 // pipeline name and counter
 func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*PipelineInstance, error) {
@@ -48,5 +57,13 @@ func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*Pipeline
 func (c *DefaultClient) GetPipelineHistoryPage(name string, offset int) (*PipelineHistoryPage, error) {
 	res := new(PipelineHistoryPage)
 	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
+	return res, err
+}
+
+// GetPipelineStatus allows users to check if the pipeline is paused, locked and
+// schedulable.
+func (c *DefaultClient) GetPipelineStatus(name string) (*PipelineStatus, error) {
+	res := new(PipelineStatus)
+	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/status", name), nil, res)
 	return res, err
 }

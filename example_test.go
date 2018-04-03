@@ -59,3 +59,16 @@ func ExampleDefaultClient_GetPipelineHistoryPage() {
 		}
 	}
 }
+
+// ExampleDefaultClient_GetPipelineStatus shows an example on how to use
+// GetPipelineStatus
+func ExampleDefaultClient_GetPipelineStatus() {
+	client := gocd.New("http://localhost:8153", "admin", "badger")
+	name := "my-pipeline-name"
+	p, err := client.GetPipelineStatus(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Pipeline %s status: %#v\n", name, p)
+}
