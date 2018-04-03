@@ -6,16 +6,10 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
-type material struct {
-	Fingerprint string `json:"fingerprint,omitempty"`
-	Type        string `json:"type,omitempty"`
-	Description string `json:"description,omitempty"`
-}
-
 type pipeline struct {
 	Name      string     `json:"name,omitempty"`
 	Label     string     `json:"label,omitempty"`
-	Materials []material `json:"materials,omitempty"`
+	Materials []Material `json:"materials,omitempty"`
 	Stages    []string   `json:"stages,omitempty"`
 }
 
@@ -48,7 +42,7 @@ func (c *DefaultClient) GetPipelineGroups() ([]*PipelineGroup, error) {
 	type tmpPipeline struct {
 		Name      string     `json:"name,omitempty"`
 		Label     string     `json:"label,omitempty"`
-		Materials []material `json:"materials,omitempty"`
+		Materials []Material `json:"materials,omitempty"`
 		Stages    []tmpStage `json:"stages,omitempty"`
 	}
 

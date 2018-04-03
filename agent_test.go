@@ -91,7 +91,7 @@ func TestAgentRunHistory(t *testing.T) {
 	assert.NotNil(t, job1)
 	assert.Equal(t, "5c5c318f-e6d3-4299-9120-7faff6e6030b", job1.AgentUUID)
 	assert.Equal(t, "upload", job1.Name)
-	assert.Equal(t, []JobStateTransition{JobStateTransition{
+	assert.Equal(t, []JobStateTransition{{
 		StateChangeTime: 1435631497131,
 		ID:              539906,
 		State:           "Scheduled",

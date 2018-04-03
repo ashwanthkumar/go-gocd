@@ -28,8 +28,8 @@ func TestGetScheduledJobs(t *testing.T) {
 	job2 := jobs[1]
 	assert.Equal(t, "FT", job2.Environment)
 	assert.Equal(t, []ScheduledJobResource{
-		ScheduledJobResource{Name: "FT"},
-		ScheduledJobResource{Name: "FIREFOX"},
+		{Name: "FT"},
+		{Name: "FIREFOX"},
 	}, job2.RawResources)
 }
 
