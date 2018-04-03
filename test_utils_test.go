@@ -66,7 +66,7 @@ func AcceptHeaderCheck(t *testing.T, apiVersion int, request *http.Request) {
 	// Accept Header check
 	acceptHeader := request.Header.Get("Accept")
 	if acceptHeader != fmt.Sprintf("application/vnd.go.cd.v%d+json", apiVersion) {
-		log.Fatalf("We did not recieve Accept: application/vnd.go.cd.v%d+json header in the request", apiVersion)
+		log.Fatalf("We did not receive Accept: application/vnd.go.cd.v%d+json header in the request", apiVersion)
 	}
 }
 
