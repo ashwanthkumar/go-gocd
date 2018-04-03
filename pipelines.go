@@ -1,10 +1,7 @@
 package gocd
 
 import (
-	"encoding/json"
 	"fmt"
-
-	multierror "github.com/hashicorp/go-multierror"
 )
 
 // PipelineInstance represents a pipeline instance (for a given run)
@@ -38,20 +35,9 @@ type PipelineHistoryPage struct {
 // GetPipelineInstance returns the pipeline instance corresponding to the given
 // pipeline name and counter
 func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*PipelineInstance, error) {
-	var errors *multierror.Error
 	res := new(PipelineInstance)
-
-	_, body, errs := c.Request.Get(c.resolve(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter))).End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return res, errors.ErrorOrNil()
-	}
-
-	err := json.Unmarshal([]byte(body), res)
-	if err != nil {
-		errors = multierror.Append(errors, err)
-	}
-	return res, errors.ErrorOrNil()
+	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter), nil, res)
+	return res, err
 }
 
 // GetPipelineHistoryPage allows users to list pipeline instances. Supports
@@ -60,20 +46,7 @@ func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*Pipeline
 // setting an offset to 1 will skip the last run of the pipeline and will give
 // you a page of pipeline runs history which is 10 by default.
 func (c *DefaultClient) GetPipelineHistoryPage(name string, offset int) (*PipelineHistoryPage, error) {
-	var errors *multierror.Error
 	res := new(PipelineHistoryPage)
-
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset))).
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return res, errors.ErrorOrNil()
-	}
-
-	err := json.Unmarshal([]byte(body), res)
-	if err != nil {
-		errors = multierror.Append(errors, err)
-	}
-	return res, errors.ErrorOrNil()
+	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
+	return res, err
 }
