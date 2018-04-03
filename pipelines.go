@@ -31,9 +31,9 @@ type PipelineBuildCause struct {
 
 // GetPipelineInstance returns the pipeline instance corresponding to the given
 // pipeline name and counter
-func (c *DefaultClient) GetPipelineInstance(name string, counter int) (PipelineInstance, error) {
+func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*PipelineInstance, error) {
 	var errors *multierror.Error
-	var res PipelineInstance
+	res := new(PipelineInstance)
 
 	_, body, errs := c.Request.Get(c.resolve(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter))).End()
 	if errs != nil {
@@ -41,7 +41,7 @@ func (c *DefaultClient) GetPipelineInstance(name string, counter int) (PipelineI
 		return res, errors.ErrorOrNil()
 	}
 
-	err := json.Unmarshal([]byte(body), &res)
+	err := json.Unmarshal([]byte(body), res)
 	if err != nil {
 		errors = multierror.Append(errors, err)
 	}
