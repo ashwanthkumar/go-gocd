@@ -125,7 +125,7 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 		Delete(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		End()
-	if errs != nil && len(errs) > 0 {
+	if len(errs) > 0 {
 		errors = multierror.Append(errors, errs...)
 	}
 	return errors.ErrorOrNil()
