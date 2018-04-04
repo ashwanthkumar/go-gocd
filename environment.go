@@ -7,6 +7,16 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
+// EnvironmentVariable is used to configure environment variables of stages and
+// jobs as well as in the environment config.
+// See: https://api.gocd.org/current/#the-environment-variable-object
+type EnvironmentVariable struct {
+	Secure         bool   `json:"secure"`
+	Name           string `json:"name"`
+	Value          string `json:"value,omitempty"`
+	EncryptedValue string `json:"encrypted_value,omitempty"`
+}
+
 // EnvironmentConfig Object
 type EnvironmentConfig struct {
 	Name                 string                `json:"name,omitempty"`
