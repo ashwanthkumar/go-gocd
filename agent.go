@@ -83,7 +83,7 @@ func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 		Set("Accept", "application/vnd.go.cd.v2+json").
 		SendStruct(agent).
 		End()
-	multierror.Append(errors, errs...)
+	errors = multierror.Append(errors, errs...)
 	if errs != nil {
 		return nil, errors.ErrorOrNil()
 	}
