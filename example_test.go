@@ -25,7 +25,7 @@ func ExampleDefaultClient_GetPipelineInstance() {
 	}
 }
 
-// ExampleDefaultClient_GetPipelineHistoryPage displays gets the pipeline runs
+// ExampleDefaultClient_GetPipelineHistoryPage gets the pipeline runs
 // from 2nd to the last to 15th to the last and displays informations about it.
 // Uses the GetPipelineHistoryPage method.
 func ExampleDefaultClient_GetPipelineHistoryPage() {
