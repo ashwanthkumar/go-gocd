@@ -51,11 +51,13 @@ func main() {
   - [ ] Append to artifact
 - [ ] Pipelines
   - [X] Get pipeline instance
-  - [ ] Get pipeline status
-  - [ ] Pause a pipeline
-  - [ ] Unpause a pipeline
-  - [ ] Releasing a pipeline lock
-  - [ ] Scheduling Pipelines
+  - [X] Get pipeline status
+  - [X] Pause a pipeline
+  - [X] Unpause a pipeline
+  - [X] Releasing a pipeline lock
+  - [ ] Scheduling pipelines
+  - [ ] Create a pipeline
+  - [ ] Delete a pipeline
 - [ ] Stages
   - [ ] Cancel Stage
   - [ ] Get Stage instance
