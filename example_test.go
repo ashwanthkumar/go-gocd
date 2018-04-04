@@ -72,3 +72,33 @@ func ExampleDefaultClient_GetPipelineStatus() {
 	}
 	fmt.Printf("Pipeline %s status: %#v\n", name, p)
 }
+
+// ExampleDefaultClient_UnpausePipeline shows an example on how to use
+// UnpausePipeline and double-checking the status with GetPipelineStatus
+func ExampleDefaultClient_UnpausePipeline() {
+	client := gocd.New("http://localhost:8153", "admin", "badger")
+	name := "my-pipeline-name"
+	p, err := client.GetPipelineStatus(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if !p.Paused {
+		_, err = client.UnpausePipeline(name)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+	c, err := client.GetPipelineStatus(name)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if c.Paused {
+		fmt.Printf("Pipeline %s is now paused\n", name)
+	} else {
+		fmt.Printf("Pipeline %s does seem to still be unpaused\n", name)
+	}
+
+}

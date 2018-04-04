@@ -67,3 +67,36 @@ func (c *DefaultClient) GetPipelineStatus(name string) (*PipelineStatus, error) 
 	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/status", name), nil, res)
 	return res, err
 }
+
+// PausePipeline pauses the specified pipeline using the given cause
+func (c *DefaultClient) PausePipeline(name, cause string) (*SimpleMessage, error) {
+	data := struct{ PauseCause string }{cause}
+	res := new(SimpleMessage)
+	// The headers bellow only work with gocd 18.2
+	// headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
+	headers := map[string]string{"Accept": "application/json", "Confirm": "true"}
+	err := c.postJSON(fmt.Sprintf("/go/api/pipelines/%s/pause", name), headers, data, res)
+	return res, err
+}
+
+// UnpausePipeline unpauses the specified pipeline
+func (c *DefaultClient) UnpausePipeline(name string) (*SimpleMessage, error) {
+	res := new(SimpleMessage)
+	// The headers bellow only work with gocd 18.2 and over
+	//headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
+	headers := map[string]string{"Accept": "application/json", "Confirm": "true"}
+	err := c.postJSON(fmt.Sprintf("/go/api/pipelines/%s/unpause", name), headers, nil, res)
+	return res, err
+}
+
+// UnlockPipeline releases a lock on a pipeline so that you can start up a new
+// instance without having to wait for the earlier instance to finish.
+// Note: A pipeline lock can only be released when a pipeline is locked, AND there is no
+// running instance of the pipeline.
+// Requires GoCD version 18.2.0+
+func (c *DefaultClient) UnlockPipeline(name string) (*SimpleMessage, error) {
+	res := new(SimpleMessage)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
+	err := c.postJSON(fmt.Sprintf("/go/api/pipelines/%s/unlock", name), headers, nil, res)
+	return res, err
+}

@@ -7,3 +7,9 @@ type Pagination struct {
 	Total    int `json:"total"`
 	PageSize int `json:"page_size"`
 }
+
+// SimpleMessage is in general the structure returned by the POST queries sent
+// to GoCD.
+type SimpleMessage struct {
+	Message string `json:"message"`
+}
