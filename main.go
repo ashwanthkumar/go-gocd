@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"strings"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -28,11 +29,9 @@ func (c *DefaultClient) resolve(resource string) string {
 }
 
 // getJSON executes a Get query against the given url with the given headers and
-// modify the out object given as reference
-// usage:
-// err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
-// err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), map[string]string{"Accept": "application/vnd.go.cd.v2+json"}, res)
-func (c *DefaultClient) getJSON(url string, headers map[string]string, out interface{}) error {
+// modify the out object given as reference. Also returns the value of the ETag
+// header if any was returned by the server.
+func (c *DefaultClient) getJSON(url string, headers map[string]string, out interface{}) (string, error) {
 	var errors *multierror.Error
 
 	req := c.Request.Get(c.resolve(url))
@@ -40,10 +39,17 @@ func (c *DefaultClient) getJSON(url string, headers map[string]string, out inter
 		req.Set(k, v)
 	}
 
-	if _, _, errs := req.EndStruct(out); errs != nil {
+	resp, _, errs := req.EndStruct(out)
+	if errs != nil {
 		errors = multierror.Append(errors, errs...)
 	}
-	return errors.ErrorOrNil()
+
+	etag := ""
+	if t, ok := resp.Header["Etag"]; ok {
+		etag = strings.Replace(t[0], `"`, "", -1)
+	}
+
+	return etag, errors.ErrorOrNil()
 }
 
 // postJSON executes a Post query against the given url with the given headers and

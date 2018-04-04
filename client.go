@@ -21,6 +21,7 @@ type Client interface {
 	PausePipeline(string, string) (*SimpleMessage, error)
 	UnpausePipeline(string) (*SimpleMessage, error)
 	UnlockPipeline(string) (*SimpleMessage, error)
+	PipelineGetConfig(string) (*PipelineConfig, string, error)
 
 	// Jobs API
 	GetScheduledJobs() ([]*ScheduledJob, error)

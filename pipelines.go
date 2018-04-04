@@ -106,7 +106,7 @@ type Timer struct {
 // pipeline name and counter
 func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*PipelineInstance, error) {
 	res := new(PipelineInstance)
-	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter), nil, res)
+	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter), nil, res)
 	return res, err
 }
 
@@ -117,7 +117,7 @@ func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*Pipeline
 // you a page of pipeline runs history which is 10 by default.
 func (c *DefaultClient) GetPipelineHistoryPage(name string, offset int) (*PipelineHistoryPage, error) {
 	res := new(PipelineHistoryPage)
-	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
+	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
 	return res, err
 }
 
@@ -125,7 +125,7 @@ func (c *DefaultClient) GetPipelineHistoryPage(name string, offset int) (*Pipeli
 // schedulable.
 func (c *DefaultClient) GetPipelineStatus(name string) (*PipelineStatus, error) {
 	res := new(PipelineStatus)
-	err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/status", name), nil, res)
+	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/status", name), nil, res)
 	return res, err
 }
 
@@ -160,4 +160,13 @@ func (c *DefaultClient) UnlockPipeline(name string) (*SimpleMessage, error) {
 	headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
 	err := c.postJSON(fmt.Sprintf("/go/api/pipelines/%s/unlock", name), headers, nil, res)
 	return res, err
+}
+
+// PipelineGetConfig returns the configuration of the given pipeline along with
+// the ETag header value
+func (c *DefaultClient) PipelineGetConfig(name string) (*PipelineConfig, string, error) {
+	res := new(PipelineConfig)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v5+json"}
+	etag, err := c.getJSON(fmt.Sprintf("/go/api/admin/pipelines/%s", name), headers, res)
+	return res, etag, err
 }
