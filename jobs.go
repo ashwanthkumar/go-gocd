@@ -27,7 +27,7 @@ type JobConfig struct {
 	Resources            []string              `json:"resources,omitempty"`
 	Tasks                []Task                `json:"tasks,omitempty"`
 	Tabs                 []Tab                 `json:"tabs,omitempty"`
-	Artifacts            []ArtifactConfig      `json:"artifact,omnitempty"`
+	Artifacts            []ArtifactConfig      `json:"artifacts,omnitempty"`
 	Properties           []JobProperty         `json:"properties,omitempty"`
 	ElasticProfileID     string                `json:"elastic_profile_id,omitempty"`
 }
