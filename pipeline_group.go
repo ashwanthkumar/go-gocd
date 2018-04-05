@@ -1,11 +1,5 @@
 package gocd
 
-import (
-	"encoding/json"
-
-	multierror "github.com/hashicorp/go-multierror"
-)
-
 type pipeline struct {
 	Name      string     `json:"name,omitempty"`
 	Label     string     `json:"label,omitempty"`
@@ -21,19 +15,6 @@ type PipelineGroup struct {
 
 // GetPipelineGroups List pipeline groups along with the pipelines, stages and materials for each pipeline.
 func (c *DefaultClient) GetPipelineGroups() ([]*PipelineGroup, error) {
-	var errors *multierror.Error
-
-	// Somehow GoCD will return "The resource you requested was not found!" if you specify an Accept header
-	_, body, errs := c.Request.
-		Get(c.resolve("/go/api/config/pipeline_groups")).
-		//Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*PipelineGroup{}, errors.ErrorOrNil()
-	}
-
 	// first parse the json into temporary structure, so we parse stages object
 	// with a single name string attribute as simple string
 	type tmpStage struct {
@@ -50,16 +31,15 @@ func (c *DefaultClient) GetPipelineGroups() ([]*PipelineGroup, error) {
 		Name      string        `json:"name,omitempty"`
 		Pipelines []tmpPipeline `json:"pipelines,omitempty"`
 	}
-	var tmpPipelineGroups []tmpPipelineGroup
 
-	jsonErr := json.Unmarshal([]byte(body), &tmpPipelineGroups)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-		return []*PipelineGroup{}, errors.ErrorOrNil()
+	tmpPipelineGroups := new([]*tmpPipelineGroup)
+	_, err := c.getJSON("/go/api/config/pipeline_groups", nil, tmpPipelineGroups)
+	if err != nil {
+		return []*PipelineGroup{}, err
 	}
 	// create the good pipeline groups structures and copy data from the temporary structs
-	pipelineGroups := make([]*PipelineGroup, len(tmpPipelineGroups))
-	for i, pg := range tmpPipelineGroups {
+	pipelineGroups := make([]*PipelineGroup, len(*tmpPipelineGroups))
+	for i, pg := range *tmpPipelineGroups {
 		pipelineGroups[i] = &PipelineGroup{Name: pg.Name}
 		pipelineGroups[i].Pipelines = make([]pipeline, len(pg.Pipelines))
 		for j, p := range pg.Pipelines {
@@ -70,5 +50,5 @@ func (c *DefaultClient) GetPipelineGroups() ([]*PipelineGroup, error) {
 		}
 
 	}
-	return pipelineGroups, errors.ErrorOrNil()
+	return pipelineGroups, err
 }
