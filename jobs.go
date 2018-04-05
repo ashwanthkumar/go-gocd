@@ -1,7 +1,6 @@
 package gocd
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 
@@ -218,23 +217,11 @@ type JobStateTransition struct {
 
 // GetJobHistory - The job history allows users to list job instances of specified job. Supports pagination using offset which tells the API how many instances to skip.
 func (c *DefaultClient) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobHistory, error) {
-	var errors *multierror.Error
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/jobs/%s/%s/%s/history/%d", pipeline, stage, job, offset))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*JobHistory{}, errors.ErrorOrNil()
-	}
-
 	type JobHistoryResponse struct {
 		Jobs []*JobHistory `json:"jobs"`
 	}
-	var jobs *JobHistoryResponse
-	jsonErr := json.Unmarshal([]byte(body), &jobs)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-	}
-	return jobs.Jobs, errors.ErrorOrNil()
+	res := new(JobHistoryResponse)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v2+json"}
+	_, err := c.getJSON(fmt.Sprintf("/go/api/jobs/%s/%s/%s/history/%d", pipeline, stage, job, offset), headers, res)
+	return res.Jobs, err
 }
