@@ -85,22 +85,8 @@ func (c *DefaultClient) GetAllEnvironmentConfigs() ([]*EnvironmentConfig, error)
 
 // GetEnvironmentConfig - Gets environment config for specified environment name.
 func (c *DefaultClient) GetEnvironmentConfig(name string) (*EnvironmentConfig, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/admin/environments/%s", name))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-	errors = multierror.Append(errors, errs...)
-	if errs != nil {
-		return nil, errors.ErrorOrNil()
-	}
-
-	var environment *EnvironmentConfig
-
-	jsonErr := json.Unmarshal([]byte(body), &environment)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-	}
-	return environment, errors.ErrorOrNil()
+	res := new(EnvironmentConfig)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v2+json"}
+	_, err := c.getJSON(fmt.Sprintf("/go/api/admin/environments/%s", name), headers, res)
+	return res, err
 }
