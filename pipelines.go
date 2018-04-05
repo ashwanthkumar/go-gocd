@@ -102,35 +102,35 @@ type Timer struct {
 	OnlyOnChanges bool   `json:"only_on_changes"`
 }
 
-// GetPipelineInstance returns the pipeline instance corresponding to the given
+// PipelineGetInstance returns the pipeline instance corresponding to the given
 // pipeline name and counter
-func (c *DefaultClient) GetPipelineInstance(name string, counter int) (*PipelineInstance, error) {
+func (c *DefaultClient) PipelineGetInstance(name string, counter int) (*PipelineInstance, error) {
 	res := new(PipelineInstance)
 	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/instance/%d", name, counter), nil, res)
 	return res, err
 }
 
-// GetPipelineHistoryPage allows users to list pipeline instances. Supports
+// PipelineGetHistoryPage allows users to list pipeline instances. Supports
 // pagination using offset which tells the API how many instances to skip.
 // Note that te history is listed in reverse chronological order meaning the
 // setting an offset to 1 will skip the last run of the pipeline and will give
 // you a page of pipeline runs history which is 10 by default.
-func (c *DefaultClient) GetPipelineHistoryPage(name string, offset int) (*PipelineHistoryPage, error) {
+func (c *DefaultClient) PipelineGetHistoryPage(name string, offset int) (*PipelineHistoryPage, error) {
 	res := new(PipelineHistoryPage)
 	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/history/%d", name, offset), nil, res)
 	return res, err
 }
 
-// GetPipelineStatus allows users to check if the pipeline is paused, locked and
+// PipelineGetStatus allows users to check if the pipeline is paused, locked and
 // schedulable.
-func (c *DefaultClient) GetPipelineStatus(name string) (*PipelineStatus, error) {
+func (c *DefaultClient) PipelineGetStatus(name string) (*PipelineStatus, error) {
 	res := new(PipelineStatus)
 	_, err := c.getJSON(fmt.Sprintf("/go/api/pipelines/%s/status", name), nil, res)
 	return res, err
 }
 
-// PausePipeline pauses the specified pipeline using the given cause
-func (c *DefaultClient) PausePipeline(name, cause string) (*SimpleMessage, error) {
+// PipelinePause pauses the specified pipeline using the given cause
+func (c *DefaultClient) PipelinePause(name, cause string) (*SimpleMessage, error) {
 	data := struct{ PauseCause string }{cause}
 	res := new(SimpleMessage)
 	// The headers bellow only work with gocd 18.2
@@ -140,8 +140,8 @@ func (c *DefaultClient) PausePipeline(name, cause string) (*SimpleMessage, error
 	return res, err
 }
 
-// UnpausePipeline unpauses the specified pipeline
-func (c *DefaultClient) UnpausePipeline(name string) (*SimpleMessage, error) {
+// PipelineUnpause unpauses the specified pipeline
+func (c *DefaultClient) PipelineUnpause(name string) (*SimpleMessage, error) {
 	res := new(SimpleMessage)
 	// The headers bellow only work with gocd 18.2 and over
 	//headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
@@ -150,12 +150,12 @@ func (c *DefaultClient) UnpausePipeline(name string) (*SimpleMessage, error) {
 	return res, err
 }
 
-// UnlockPipeline releases a lock on a pipeline so that you can start up a new
+// PipelineUnlock releases a lock on a pipeline so that you can start up a new
 // instance without having to wait for the earlier instance to finish.
 // Note: A pipeline lock can only be released when a pipeline is locked, AND there is no
 // running instance of the pipeline.
 // Requires GoCD version 18.2.0+
-func (c *DefaultClient) UnlockPipeline(name string) (*SimpleMessage, error) {
+func (c *DefaultClient) PipelineUnlock(name string) (*SimpleMessage, error) {
 	res := new(SimpleMessage)
 	headers := map[string]string{"Accept": "application/vnd.go.cd.v1+json", "X-GoCD-Confirm": "true"}
 	err := c.postJSON(fmt.Sprintf("/go/api/pipelines/%s/unlock", name), headers, nil, res)

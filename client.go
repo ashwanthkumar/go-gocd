@@ -15,12 +15,12 @@ type Client interface {
 	GetPipelineGroups() ([]*PipelineGroup, error)
 
 	// Pipelines API
-	GetPipelineInstance(string, int) (*PipelineInstance, error)
-	GetPipelineHistoryPage(string, int) (*PipelineHistoryPage, error)
-	GetPipelineStatus(string) (*PipelineStatus, error)
-	PausePipeline(string, string) (*SimpleMessage, error)
-	UnpausePipeline(string) (*SimpleMessage, error)
-	UnlockPipeline(string) (*SimpleMessage, error)
+	PipelineGetInstance(string, int) (*PipelineInstance, error)
+	PipelineGetHistoryPage(string, int) (*PipelineHistoryPage, error)
+	PipelineGetStatus(string) (*PipelineStatus, error)
+	PipelinePause(string, string) (*SimpleMessage, error)
+	PipelineUnpause(string) (*SimpleMessage, error)
+	PipelineUnlock(string) (*SimpleMessage, error)
 	PipelineGetConfig(string) (*PipelineConfig, string, error)
 
 	// Jobs API
