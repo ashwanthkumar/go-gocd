@@ -24,53 +24,25 @@ type Agent struct {
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
 func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Get(c.resolve("/go/api/agents")).
-		Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*Agent{}, errors.ErrorOrNil()
-	}
-
 	type EmbeddedObj struct {
 		Agents []*Agent `json:"agents"`
 	}
 	type AllAgentsResponse struct {
 		Embedded EmbeddedObj `json:"_embedded"`
 	}
-	var responseFormat *AllAgentsResponse
 
-	jsonErr := json.Unmarshal([]byte(body), &responseFormat)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-		return []*Agent{}, errors.ErrorOrNil()
-	}
-	return responseFormat.Embedded.Agents, errors.ErrorOrNil()
+	responseFormat := new(AllAgentsResponse)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v2+json"}
+	_, err := c.getJSON("/go/api/agents", headers, responseFormat)
+	return responseFormat.Embedded.Agents, err
 }
 
 // GetAgent - Gets an agent by its unique identifier (uuid)
 func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-	errors = multierror.Append(errors, errs...)
-	if errs != nil {
-		return nil, errors.ErrorOrNil()
-	}
-
-	var agent *Agent
-
-	jsonErr := json.Unmarshal([]byte(body), &agent)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-	}
-	return agent, errors.ErrorOrNil()
+	res := new(Agent)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v2+json"}
+	_, err := c.getJSON(fmt.Sprintf("/go/api/agents/%s", uuid), headers, res)
+	return res, err
 }
 
 // UpdateAgent - Update some attributes of an agent (uuid).
@@ -133,24 +105,11 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 
 // AgentRunJobHistory - Lists the jobs that have executed on an agent.
 func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error) {
-	var errors *multierror.Error
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*JobHistory{}, errors.ErrorOrNil()
-	}
-
 	type JobHistoryResponse struct {
 		Jobs []*JobHistory `json:"jobs"`
 	}
-	var jobs *JobHistoryResponse
-	jsonErr := json.Unmarshal([]byte(body), &jobs)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-		return []*JobHistory{}, errors.ErrorOrNil()
-	}
-	return jobs.Jobs, errors.ErrorOrNil()
+	res := new(JobHistoryResponse)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v2+json"}
+	_, err := c.getJSON(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset), headers, res)
+	return res.Jobs, err
 }
