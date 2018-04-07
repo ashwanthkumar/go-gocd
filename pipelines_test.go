@@ -76,3 +76,29 @@ func TestGetPipelineStatus(t *testing.T) {
 	assert.Equal(t, false, s.Schedulable)
 	assert.Equal(t, false, s.Locked)
 }
+
+func TestGetPipelineConfig(t *testing.T) {
+	t.Parallel()
+	client, server := newTestAPIClient("/go/api/admin/pipelines/my_pipeline", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_config.json", 0, DummyRequestBodyValidator))
+	defer server.Close()
+
+	p, etag, err := client.GetPipelineConfig("my_pipeline")
+	assert.NoError(t, err)
+	assert.Equal(t, "", etag)
+	assert.Equal(t, "my_pipeline", p.Name)
+	assert.Equal(t, "none", p.LockBehavior)
+
+	assert.Equal(t, 1, len(p.Stages))
+	stg := p.Stages[0]
+	assert.Equal(t, "my_stage", stg.Name)
+	assert.Equal(t, false, stg.NeverCleanupArtifacts)
+
+	assert.Equal(t, 1, len(stg.Jobs))
+	job := stg.Jobs[0]
+	assert.Equal(t, "my_job", job.Name)
+	assert.Equal(t, 0, job.Timeout)
+	assert.Equal(t, 2, len(job.Resources))
+	assert.Equal(t, 1, len(job.Tasks))
+	assert.Equal(t, 1, len(job.Tabs))
+	assert.Equal(t, 2, len(job.Artifacts))
+}
