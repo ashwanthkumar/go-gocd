@@ -6,11 +6,11 @@ import (
 	"github.com/ashwanthkumar/go-gocd"
 )
 
-// ExampleDefaultClient_PipelineGetInstance displays an instance of a pipeline
-// run using the PipelineGetInstance method
-func ExampleDefaultClient_PipelineGetInstance() {
+// ExampleDefaultClient_GetPipelineInstance displays an instance of a pipeline
+// run using the GetPipelineInstance method
+func ExampleDefaultClient_GetPipelineInstance() {
 	client := gocd.New("http://localhost:8153", "admin", "badger")
-	p, err := client.PipelineGetInstance("my-pipeline-name", 911)
+	p, err := client.GetPipelineInstance("my-pipeline-name", 911)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -25,16 +25,16 @@ func ExampleDefaultClient_PipelineGetInstance() {
 	}
 }
 
-// ExampleDefaultClient_PipelineGetHistoryPage gets the pipeline runs
+// ExampleDefaultClient_GetPipelineHistoryPage gets the pipeline runs
 // from 2nd to the last to 15th to the last and displays informations about it.
-// Uses the PipelineGetHistoryPage method.
-func ExampleDefaultClient_PipelineGetHistoryPage() {
+// Uses the GetPipelineHistoryPage method.
+func ExampleDefaultClient_GetPipelineHistoryPage() {
 	client := gocd.New("http://localhost:8153", "admin", "badger")
 
 	offset := 2      // we ignore the 2 last pipeline runs
 	iterations := 15 // We want to stop iterating after we displayed 15 pipelines
 	for {
-		h, err := client.PipelineGetHistoryPage("my-pipeline-name", offset)
+		h, err := client.GetPipelineHistoryPage("my-pipeline-name", offset)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -60,12 +60,12 @@ func ExampleDefaultClient_PipelineGetHistoryPage() {
 	}
 }
 
-// ExampleDefaultClient_PipelineGetStatus shows an example on how to use
-// PipelineGetStatus
-func ExampleDefaultClient_PipelineGetStatus() {
+// ExampleDefaultClient_GetPipelineStatus shows an example on how to use
+// GetPipelineStatus
+func ExampleDefaultClient_GetPipelineStatus() {
 	client := gocd.New("http://localhost:8153", "admin", "badger")
 	name := "my-pipeline-name"
-	p, err := client.PipelineGetStatus(name)
+	p, err := client.GetPipelineStatus(name)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -73,24 +73,24 @@ func ExampleDefaultClient_PipelineGetStatus() {
 	fmt.Printf("Pipeline %s status: %#v\n", name, p)
 }
 
-// ExampleDefaultClient_PipelineUnpause shows an example on how to use
-// PipelineUnpause and double-checking the status with PipelineGetStatus
-func ExampleDefaultClient_PipelineUnpause() {
+// ExampleDefaultClient_UnpausePipeline shows an example on how to use
+// UnpausePipeline and double-checking the status with GetPipelineStatus
+func ExampleDefaultClient_UnpausePipeline() {
 	client := gocd.New("http://localhost:8153", "admin", "badger")
 	name := "my-pipeline-name"
-	p, err := client.PipelineGetStatus(name)
+	p, err := client.GetPipelineStatus(name)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	if !p.Paused {
-		_, err = client.PipelineUnpause(name)
+		_, err = client.UnpausePipeline(name)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 	}
-	c, err := client.PipelineGetStatus(name)
+	c, err := client.GetPipelineStatus(name)
 	if err != nil {
 		fmt.Println(err)
 		return

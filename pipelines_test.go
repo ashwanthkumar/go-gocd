@@ -6,12 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPipelineGetInstance(t *testing.T) {
+func TestGetPipelineInstance(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/pipelines/PipelineName/instance/1", serveFileAsJSON(t, "GET", "test-fixtures/pipeline_get_instance.json", 0, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/pipelines/PipelineName/instance/1", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_instance.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 
-	pipeline, err := client.PipelineGetInstance("PipelineName", 1)
+	pipeline, err := client.GetPipelineInstance("PipelineName", 1)
 	assert.NoError(t, err)
 	assert.NotNil(t, pipeline)
 	assert.Equal(t, "PipelineName", pipeline.Name)
@@ -32,12 +32,12 @@ func TestPipelineGetInstance(t *testing.T) {
 	assert.Equal(t, "my hola mundo changes", rev.Modifications[0].Comment)
 }
 
-func TestPipelineGetHistoryPage(t *testing.T) {
+func TestGetPipelineHistoryPage(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/pipelines/pipeline1/history/0", serveFileAsJSON(t, "GET", "test-fixtures/pipeline_get_history_page.json", 0, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/pipelines/pipeline1/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_history_page.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 
-	history, err := client.PipelineGetHistoryPage("pipeline1", 0)
+	history, err := client.GetPipelineHistoryPage("pipeline1", 0)
 	assert.Equal(t, 2, len(history.Pipelines))
 	assert.NoError(t, err)
 	assert.Equal(t, 0, history.Pagination.Offset)
@@ -63,12 +63,12 @@ func TestPipelineGetHistoryPage(t *testing.T) {
 	assert.Equal(t, "my hola mundo changes", rev.Modifications[0].Comment)
 }
 
-func TestPipelineGetStatus(t *testing.T) {
+func TestGetPipelineStatus(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/pipelines/pipeline1/status", serveFileAsJSON(t, "GET", "test-fixtures/pipeline_get_status.json", 0, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/pipelines/pipeline1/status", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_status.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 
-	s, err := client.PipelineGetStatus("pipeline1")
+	s, err := client.GetPipelineStatus("pipeline1")
 	assert.NoError(t, err)
 	assert.Equal(t, "Reason for pausing this pipeline", s.PausedCause)
 	assert.Equal(t, "admin", s.PausedBy)
@@ -77,12 +77,12 @@ func TestPipelineGetStatus(t *testing.T) {
 	assert.Equal(t, false, s.Locked)
 }
 
-func TestPipelineGetConfig(t *testing.T) {
+func TestGetPipelineConfig(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/admin/pipelines/my_pipeline", serveFileAsJSON(t, "GET", "test-fixtures/pipeline_get_config.json", 0, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/admin/pipelines/my_pipeline", serveFileAsJSON(t, "GET", "test-fixtures/get_pipeline_config.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 
-	p, etag, err := client.PipelineGetConfig("my_pipeline")
+	p, etag, err := client.GetPipelineConfig("my_pipeline")
 	assert.NoError(t, err)
 	assert.Equal(t, "", etag)
 	assert.Equal(t, "my_pipeline", p.Name)
