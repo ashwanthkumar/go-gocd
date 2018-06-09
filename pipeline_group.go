@@ -6,7 +6,8 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 )
 
-type pipeline struct {
+// Pipeline Object
+type Pipeline struct {
 	Name      string     `json:"name,omitempty"`
 	Label     string     `json:"label,omitempty"`
 	Materials []Material `json:"materials,omitempty"`
@@ -16,7 +17,7 @@ type pipeline struct {
 // PipelineGroup Object
 type PipelineGroup struct {
 	Name      string     `json:"name,omitempty"`
-	Pipelines []pipeline `json:"pipelines,omitempty"`
+	Pipelines []Pipeline `json:"pipelines,omitempty"`
 }
 
 // GetPipelineGroups List pipeline groups along with the pipelines, stages and materials for each pipeline.
@@ -61,9 +62,9 @@ func (c *DefaultClient) GetPipelineGroups() ([]*PipelineGroup, error) {
 	pipelineGroups := make([]*PipelineGroup, len(tmpPipelineGroups))
 	for i, pg := range tmpPipelineGroups {
 		pipelineGroups[i] = &PipelineGroup{Name: pg.Name}
-		pipelineGroups[i].Pipelines = make([]pipeline, len(pg.Pipelines))
+		pipelineGroups[i].Pipelines = make([]Pipeline, len(pg.Pipelines))
 		for j, p := range pg.Pipelines {
-			pipelineGroups[i].Pipelines[j] = pipeline{Name: p.Name, Label: p.Label, Materials: p.Materials, Stages: make([]string, len(p.Stages))}
+			pipelineGroups[i].Pipelines[j] = Pipeline{Name: p.Name, Label: p.Label, Materials: p.Materials, Stages: make([]string, len(p.Stages))}
 			for k, s := range p.Stages {
 				pipelineGroups[i].Pipelines[j].Stages[k] = s.Name
 			}
