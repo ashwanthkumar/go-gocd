@@ -9,7 +9,7 @@ import (
 
 func TestGetAllAgents(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", 4, DummyRequestBodyValidator))
 	defer server.Close()
 	agents, err := client.GetAllAgents()
 	assert.NoError(t, err)
@@ -31,7 +31,7 @@ func TestGetAllAgents(t *testing.T) {
 
 func TestGetAgent(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 4, DummyRequestBodyValidator))
 	defer server.Close()
 	agent, err := client.GetAgent("uuid")
 	assert.NoError(t, err)
@@ -51,14 +51,14 @@ func TestGetAgent(t *testing.T) {
 func TestUpdateAgent(t *testing.T) {
 	t.Parallel()
 	requestBodyValidator := func(body string) error {
-		expectedBody := "{\"hostname\":\"agent02.example.com\"}"
+		expectedBody := "{\"build_details\":{},\"hostname\":\"agent02.example.com\"}"
 		if body != expectedBody {
 			return fmt.Errorf("Request body (%s) didn't match the expected body (%s)", body, expectedBody)
 		}
 		return nil
 	}
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 2, requestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 4, requestBodyValidator))
 	defer server.Close()
 	var agent = Agent{
 		Hostname: "agent02.example.com",
@@ -72,7 +72,7 @@ func TestUpdateAgent(t *testing.T) {
 func TestDeleteAgent(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 4, DummyRequestBodyValidator))
 	defer server.Close()
 	err := client.DeleteAgent("uuid")
 	assert.NoError(t, err)
@@ -81,7 +81,7 @@ func TestDeleteAgent(t *testing.T) {
 func TestAgentRunHistory(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 	jobs, err := client.AgentRunJobHistory("uuid", 0)
 	assert.NoError(t, err)

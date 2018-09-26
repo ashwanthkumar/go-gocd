@@ -9,17 +9,22 @@ import (
 
 // Agent Object
 type Agent struct {
-	UUID            string `json:"uuid,omitempty"`
-	Hostname        string `json:"hostname,omitempty"`
-	IPAddress       string `json:"ip_address,omitempty"`
-	Sandbox         string `json:"sandbox,omitempty"`
-	OperatingSystem string `json:"operating_system,omitempty"`
-	// FreeSpace        int      `json:"free_space,string,omitempty"` - There's inconsistency on how this field is being returned in the API
-	AgentConfigState string   `json:"agent_config_state,omitempty"`
-	AgentState       string   `json:"agent_state,omitempty"`
-	BuildState       string   `json:"build_state,omitempty"`
-	Resources        []string `json:"resources,omitempty"`
-	Env              []string `json:"environments,omitempty"`
+	UUID             string `json:"uuid,omitempty"`
+	Hostname         string `json:"hostname,omitempty"`
+	IPAddress        string `json:"ip_address,omitempty"`
+	Sandbox          string `json:"sandbox,omitempty"`
+	OperatingSystem  string `json:"operating_system,omitempty"`
+	FreeSpace        int    `json:"free_space,omitempty"`
+	AgentConfigState string `json:"agent_config_state,omitempty"`
+	AgentState       string `json:"agent_state,omitempty"`
+	BuildState       string `json:"build_state,omitempty"`
+	BuildDetails     struct {
+		PipelineName string `json:"pipeline_name,omitempty"`
+		StageName    string `json:"stage_name,omitempty"`
+		JobName      string `json:"job_name,omitempty"`
+	} `json:"build_details,omitempty"`
+	Resources []string `json:"resources,omitempty"`
+	Env       []string `json:"environments,omitempty"`
 }
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
@@ -28,7 +33,7 @@ func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 
 	_, body, errs := c.Request.
 		Get(c.resolve("/go/api/agents")).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		Set("Accept", "application/vnd.go.cd.v4+json").
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)
@@ -57,7 +62,7 @@ func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
 
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		Set("Accept", "application/vnd.go.cd.v4+json").
 		End()
 	errors = multierror.Append(errors, errs...)
 	if errs != nil {
@@ -80,7 +85,7 @@ func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 
 	_, body, errs := c.Request.
 		Patch(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		Set("Accept", "application/vnd.go.cd.v4+json").
 		SendStruct(agent).
 		End()
 	multierror.Append(errors, errs...)
@@ -123,7 +128,7 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 
 	_, _, errs := c.Request.
 		Delete(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		Set("Accept", "application/vnd.go.cd.v4+json").
 		End()
 	if len(errs) > 0 {
 		errors = multierror.Append(errors, errs...)
@@ -136,7 +141,8 @@ func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHisto
 	var errors *multierror.Error
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		// 18.6.0: providing API version here results in "resource not found"
+		Set("Accept", "application/json").
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)

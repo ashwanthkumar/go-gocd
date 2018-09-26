@@ -107,7 +107,8 @@ func (c *DefaultClient) GetJobHistory(pipeline, stage, job string, offset int) (
 	var errors *multierror.Error
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/jobs/%s/%s/%s/history/%d", pipeline, stage, job, offset))).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		// 18.6.0: providing API version here results in "resource not found"
+		Set("Accept", "application/json").
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)

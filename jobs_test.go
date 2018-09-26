@@ -35,7 +35,7 @@ func TestGetScheduledJobs(t *testing.T) {
 
 func TestGetJobHistory(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/jobs/pipeline/stage/job/history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_job_history.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 	jobs, err := client.GetJobHistory("pipeline", "stage", "job", 0)
 	assert.NoError(t, err)
