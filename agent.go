@@ -28,7 +28,7 @@ func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 
 	_, body, errs := c.Request.
 		Get(c.resolve("/go/api/agents")).
-		Set("Accept", "application/vnd.go.cd.v2+json").
+		Set("Accept", "application/vnd.go.cd.v4+json").
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)
