@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -106,4 +107,31 @@ func TestAgentRunHistory(t *testing.T) {
 	assert.Equal(t, 100129, job1.ID)
 	assert.Equal(t, "1", job1.StageCounter)
 	assert.Equal(t, "upload-installers", job1.StageName)
+}
+
+func TestFreeSpace(t *testing.T) {
+	tc := map[string]map[string]FreeSpace{
+		"numbers": {
+			"1337": 1337,
+			"0":    0,
+		},
+		"strings": {
+			"\"unknown\"": -1,
+			"\"\"":        -1,
+		},
+	}
+	for desc, c := range tc {
+		t.Run(desc, func(t *testing.T) {
+			for js, expected := range c {
+				var f FreeSpace
+				if err := json.Unmarshal([]byte(js), &f); err != nil {
+					t.Fatal(err)
+				}
+				if f != expected {
+					t.Error("invalid value", f)
+				}
+			}
+		})
+	}
+
 }

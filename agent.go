@@ -2,6 +2,7 @@ package gocd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -9,15 +10,15 @@ import (
 
 // Agent Object
 type Agent struct {
-	UUID             string `json:"uuid,omitempty"`
-	Hostname         string `json:"hostname,omitempty"`
-	IPAddress        string `json:"ip_address,omitempty"`
-	Sandbox          string `json:"sandbox,omitempty"`
-	OperatingSystem  string `json:"operating_system,omitempty"`
-	FreeSpace        int    `json:"free_space,omitempty"`
-	AgentConfigState string `json:"agent_config_state,omitempty"`
-	AgentState       string `json:"agent_state,omitempty"`
-	BuildState       string `json:"build_state,omitempty"`
+	UUID             string    `json:"uuid,omitempty"`
+	Hostname         string    `json:"hostname,omitempty"`
+	IPAddress        string    `json:"ip_address,omitempty"`
+	Sandbox          string    `json:"sandbox,omitempty"`
+	OperatingSystem  string    `json:"operating_system,omitempty"`
+	FreeSpace        FreeSpace `json:"free_space,omitempty"`
+	AgentConfigState string    `json:"agent_config_state,omitempty"`
+	AgentState       string    `json:"agent_state,omitempty"`
+	BuildState       string    `json:"build_state,omitempty"`
 	BuildDetails     struct {
 		PipelineName string `json:"pipeline_name,omitempty"`
 		StageName    string `json:"stage_name,omitempty"`
@@ -25,6 +26,30 @@ type Agent struct {
 	} `json:"build_details,omitempty"`
 	Resources []string `json:"resources,omitempty"`
 	Env       []string `json:"environments,omitempty"`
+}
+
+// FreeSpace is required for GoCD API inconsistencies in agent free space scrape.
+type FreeSpace int
+
+// UnmarshalJSON expects an int or string ("unknown").
+func (i *FreeSpace) UnmarshalJSON(data []byte) error {
+	if data == nil {
+		return nil
+	}
+	var js interface{}
+	if err := json.Unmarshal(data, &js); err != nil {
+		return err
+	}
+	switch v := js.(type) {
+	case string:
+		// such as "unknown"
+		*i = -1
+	case float64:
+		*i = FreeSpace(v)
+	default:
+		return errors.New("FreeSpace: unexpected type")
+	}
+	return nil
 }
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
