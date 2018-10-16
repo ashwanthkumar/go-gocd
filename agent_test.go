@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -31,7 +32,7 @@ func TestGetAllAgents(t *testing.T) {
 
 func TestGetAgent(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 4, DummyRequestBodyValidator))
 	defer server.Close()
 	agent, err := client.GetAgent("uuid")
 	assert.NoError(t, err)
@@ -51,14 +52,14 @@ func TestGetAgent(t *testing.T) {
 func TestUpdateAgent(t *testing.T) {
 	t.Parallel()
 	requestBodyValidator := func(body string) error {
-		expectedBody := "{\"hostname\":\"agent02.example.com\"}"
+		expectedBody := "{\"build_details\":{},\"hostname\":\"agent02.example.com\"}"
 		if body != expectedBody {
 			return fmt.Errorf("Request body (%s) didn't match the expected body (%s)", body, expectedBody)
 		}
 		return nil
 	}
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 2, requestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 4, requestBodyValidator))
 	defer server.Close()
 	var agent = Agent{
 		Hostname: "agent02.example.com",
@@ -72,7 +73,7 @@ func TestUpdateAgent(t *testing.T) {
 func TestDeleteAgent(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 4, DummyRequestBodyValidator))
 	defer server.Close()
 	err := client.DeleteAgent("uuid")
 	assert.NoError(t, err)
@@ -81,7 +82,7 @@ func TestDeleteAgent(t *testing.T) {
 func TestAgentRunHistory(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 2, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
 	jobs, err := client.AgentRunJobHistory("uuid", 0)
 	assert.NoError(t, err)
@@ -106,4 +107,31 @@ func TestAgentRunHistory(t *testing.T) {
 	assert.Equal(t, 100129, job1.ID)
 	assert.Equal(t, "1", job1.StageCounter)
 	assert.Equal(t, "upload-installers", job1.StageName)
+}
+
+func TestFreeSpace(t *testing.T) {
+	tc := map[string]map[string]FreeSpace{
+		"numbers": {
+			"1337": 1337,
+			"0":    0,
+		},
+		"strings": {
+			"\"unknown\"": -1,
+			"\"\"":        -1,
+		},
+	}
+	for desc, c := range tc {
+		t.Run(desc, func(t *testing.T) {
+			for js, expected := range c {
+				var f FreeSpace
+				if err := json.Unmarshal([]byte(js), &f); err != nil {
+					t.Fatal(err)
+				}
+				if f != expected {
+					t.Error("invalid value", f)
+				}
+			}
+		})
+	}
+
 }
