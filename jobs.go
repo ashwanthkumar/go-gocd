@@ -118,10 +118,11 @@ func (c *DefaultClient) GetJobHistory(pipeline, stage, job string, offset int) (
 	type JobHistoryResponse struct {
 		Jobs []*JobHistory `json:"jobs"`
 	}
-	var jobs *JobHistoryResponse
+	jobs := JobHistoryResponse{}
 	jsonErr := json.Unmarshal([]byte(body), &jobs)
 	if jsonErr != nil {
 		errors = multierror.Append(errors, jsonErr)
+		return []*JobHistory{}, errors.ErrorOrNil()
 	}
-	return jobs.Jobs, errors.ErrorOrNil()
+	return jobs.Jobs, nil
 }
