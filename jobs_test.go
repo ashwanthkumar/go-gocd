@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,4 +57,15 @@ func TestGetJobHistory(t *testing.T) {
 	assert.Equal(t, 4, job1.ID)
 	assert.Equal(t, "1", job1.StageCounter)
 	assert.Equal(t, "defaultStage", job1.StageName)
+}
+
+func TestGetJobHistoryError(t *testing.T) {
+	t.Parallel()
+	client, server := newTestAPIClient("/go/api/jobs/pipeline/stage/job/history/0", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte("invalid json"))
+	})
+	defer server.Close()
+	if _, err := client.GetJobHistory("pipeline", "stage", "job", 0); err == nil {
+		t.Error("expected an error")
+	}
 }
