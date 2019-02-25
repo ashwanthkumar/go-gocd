@@ -162,26 +162,9 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 }
 
 // AgentRunJobHistory - Lists the jobs that have executed on an agent.
-func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) ([]*JobHistory, error) {
-	var errors *multierror.Error
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset))).
-		// 18.6.0: providing API version here results in "resource not found"
-		Set("Accept", "application/json").
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*JobHistory{}, errors.ErrorOrNil()
-	}
-
-	type JobHistoryResponse struct {
-		Jobs []*JobHistory `json:"jobs"`
-	}
-	var jobs *JobHistoryResponse
-	jsonErr := json.Unmarshal([]byte(body), &jobs)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-		return []*JobHistory{}, errors.ErrorOrNil()
-	}
-	return jobs.Jobs, errors.ErrorOrNil()
+func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) (*JobRunHistory, error) {
+	res := new(JobRunHistory)
+	headers := map[string]string{"Accept": "application/json"}
+	err := c.getJSON(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset), headers, res)
+	return res, err
 }

@@ -84,8 +84,9 @@ func TestAgentRunHistory(t *testing.T) {
 
 	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
-	jobs, err := client.AgentRunJobHistory("uuid", 0)
+	history, err := client.AgentRunJobHistory("uuid", 0)
 	assert.NoError(t, err)
+	jobs := history.Jobs
 	assert.NotNil(t, jobs)
 	assert.Equal(t, 1, len(jobs))
 	job1 := jobs[0]
@@ -107,6 +108,11 @@ func TestAgentRunHistory(t *testing.T) {
 	assert.Equal(t, 100129, job1.ID)
 	assert.Equal(t, "1", job1.StageCounter)
 	assert.Equal(t, "upload-installers", job1.StageName)
+
+	pagination := history.Pagination
+	assert.Equal(t, pagination.Total, 1292)
+	assert.Equal(t, pagination.Offset, 0)
+	assert.Equal(t, pagination.PageSize, 10)
 }
 
 func TestFreeSpace(t *testing.T) {
