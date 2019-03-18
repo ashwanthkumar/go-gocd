@@ -102,6 +102,11 @@ type JobStateTransition struct {
 	State           string `json:"state,omitempty"`
 }
 
+type JobRunHistory struct {
+	Jobs       []*JobHistory `json:"jobs"`
+	Pagination Pagination    `json:"pagination"`
+}
+
 // GetJobHistory - The job history allows users to list job instances of specified job. Supports pagination using offset which tells the API how many instances to skip.
 func (c *DefaultClient) GetJobHistory(pipeline, stage, job string, offset int) ([]*JobHistory, error) {
 	var errors *multierror.Error
