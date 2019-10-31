@@ -58,7 +58,7 @@ func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
 
 	_, body, errs := c.Request.
 		Get(c.resolve("/go/api/agents")).
-		Set("Accept", "application/vnd.go.cd.v4+json").
+		Set("Accept", "application/vnd.go.cd.v6+json").
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)
@@ -87,7 +87,7 @@ func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
 
 	_, body, errs := c.Request.
 		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v4+json").
+		Set("Accept", "application/vnd.go.cd.v6+json").
 		End()
 	errors = multierror.Append(errors, errs...)
 	if errs != nil {
@@ -110,7 +110,7 @@ func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
 
 	_, body, errs := c.Request.
 		Patch(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v4+json").
+		Set("Accept", "application/vnd.go.cd.v6+json").
 		SendStruct(agent).
 		End()
 	multierror.Append(errors, errs...)
@@ -153,7 +153,7 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 
 	_, _, errs := c.Request.
 		Delete(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v4+json").
+		Set("Accept", "application/vnd.go.cd.v6+json").
 		End()
 	if len(errs) > 0 {
 		errors = multierror.Append(errors, errs...)
