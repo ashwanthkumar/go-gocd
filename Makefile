@@ -4,4 +4,4 @@ setup:
 	go get github.com/stretchr/testify
 
 test:
-	go test -v github.com/ashwanthkumar/go-gocd
+	go test -v github.com/pagero/go-gocd-1

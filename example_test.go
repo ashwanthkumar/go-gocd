@@ -3,7 +3,7 @@ package gocd_test
 import (
 	"fmt"
 
-	"github.com/ashwanthkumar/go-gocd"
+	"github.com/pagero/go-gocd-1"
 )
 
 // ExampleDefaultClient_GetPipelineInstance displays an instance of a pipeline
