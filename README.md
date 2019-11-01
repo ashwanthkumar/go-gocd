@@ -1,4 +1,4 @@
-# go-gocd
+# go-gocd-ashwanth
 
 Go Lang library to access [GoCD API](https://api.go.cd/current/).
 
@@ -7,7 +7,7 @@ Go Lang library to access [GoCD API](https://api.go.cd/current/).
 package main
 
 import (
-  "github.com/pagero/go-gocd-1"
+  "github.com/pagero/go-gocd-ashwanth"
 )
 
 func main() {

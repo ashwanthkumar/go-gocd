@@ -1,6 +1,6 @@
 package mocks
 
-import "github.com/pagero/go-gocd-1"
+import "github.com/pagero/go-gocd-ashwanth"
 import "github.com/stretchr/testify/mock"
 
 type Client struct {
