@@ -10,7 +10,7 @@ import (
 
 func TestGetAllAgents(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", 4, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents", serveFileAsJSON(t, "GET", "test-fixtures/get_all_agents.json", 6, DummyRequestBodyValidator))
 	defer server.Close()
 	agents, err := client.GetAllAgents()
 	assert.NoError(t, err)
@@ -32,7 +32,7 @@ func TestGetAllAgents(t *testing.T) {
 
 func TestGetAgent(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 4, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "GET", "test-fixtures/get_agent.json", 6, DummyRequestBodyValidator))
 	defer server.Close()
 	agent, err := client.GetAgent("uuid")
 	assert.NoError(t, err)
@@ -59,7 +59,7 @@ func TestUpdateAgent(t *testing.T) {
 		return nil
 	}
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 4, requestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "PATCH", "test-fixtures/patch_agent.json", 6, requestBodyValidator))
 	defer server.Close()
 	var agent = Agent{
 		Hostname: "agent02.example.com",
@@ -73,7 +73,7 @@ func TestUpdateAgent(t *testing.T) {
 func TestDeleteAgent(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 4, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid", serveFileAsJSON(t, "DELETE", "test-fixtures/delete_agent.json", 6, DummyRequestBodyValidator))
 	defer server.Close()
 	err := client.DeleteAgent("uuid")
 	assert.NoError(t, err)
