@@ -29,4 +29,7 @@ type Client interface {
 	// Environment Config API
 	GetAllEnvironmentConfigs() ([]*EnvironmentConfig, error)
 	GetEnvironmentConfig(name string) (*EnvironmentConfig, error)
+
+	// Server health
+	GetServerHealthMessages() ([]*ServerHealthMessage, error)
 }
