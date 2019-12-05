@@ -1,6 +1,7 @@
 package gocd
 
 import (
+	"fmt"
 	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -40,8 +41,10 @@ func (c *DefaultClient) getJSON(url string, headers map[string]string, out inter
 		req.Set(k, v)
 	}
 
-	if _, _, errs := req.EndStruct(out); errs != nil {
+	if r, _, errs := req.EndStruct(out); errs != nil {
 		errors = multierror.Append(errors, errs...)
+	} else {
+		errors = multierror.Append(errors, c.checkResponse(r))
 	}
 	return errors.ErrorOrNil()
 }
@@ -59,8 +62,32 @@ func (c *DefaultClient) postJSON(url string, headers map[string]string, in, out 
 		req.Set(k, v)
 	}
 
-	if _, _, errs := req.SendStruct(in).End(); errs != nil {
+	if r, _, errs := req.SendStruct(in).EndStruct(out); errs != nil {
 		errors = multierror.Append(errors, errs...)
+	} else {
+		errors = multierror.Append(errors, c.checkResponse(r))
 	}
 	return errors.ErrorOrNil()
+}
+
+func (c *DefaultClient) patchJSON(url string, headers map[string]string, in, out interface{}) error {
+	var errors *multierror.Error
+
+	req := c.Request.Patch(c.resolve(url))
+	for k, v := range headers {
+		req.Set(k, v)
+	}
+	if r, _, errs := req.SendStruct(in).EndStruct(out); errs != nil {
+		errors = multierror.Append(errors, errs...)
+	} else {
+		errors = multierror.Append(errors, c.checkResponse(r))
+	}
+	return errors.ErrorOrNil()
+}
+
+func (c *DefaultClient) checkResponse(r gorequest.Response) error {
+	if r != nil && r.StatusCode < 200 && r.StatusCode > 299 {
+		return fmt.Errorf("'%s' failed with status code: %d", r.Request.URL, r.StatusCode)
+	}
+	return nil
 }

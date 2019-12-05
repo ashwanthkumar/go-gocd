@@ -54,77 +54,43 @@ func (i *FreeSpace) UnmarshalJSON(data []byte) error {
 
 // GetAllAgents - Lists all available agents, these are agents that are present in the <agents/> tag inside cruise-config.xml and also agents that are in Pending state awaiting registration.
 func (c *DefaultClient) GetAllAgents() ([]*Agent, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Get(c.resolve("/go/api/agents")).
-		Set("Accept", "application/vnd.go.cd.v6+json").
-		End()
-	if errs != nil {
-		errors = multierror.Append(errors, errs...)
-		return []*Agent{}, errors.ErrorOrNil()
-	}
-
 	type EmbeddedObj struct {
 		Agents []*Agent `json:"agents"`
 	}
 	type AllAgentsResponse struct {
 		Embedded EmbeddedObj `json:"_embedded"`
 	}
-	var responseFormat *AllAgentsResponse
-
-	jsonErr := json.Unmarshal([]byte(body), &responseFormat)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-		return []*Agent{}, errors.ErrorOrNil()
+	res := new(AllAgentsResponse)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v6+json"}
+	err := c.getJSON("/go/api/agents", headers, res)
+	if err != nil {
+		return []*Agent{}, err
 	}
-	return responseFormat.Embedded.Agents, errors.ErrorOrNil()
+	return res.Embedded.Agents, nil
 }
 
 // GetAgent - Gets an agent by its unique identifier (uuid)
 func (c *DefaultClient) GetAgent(uuid string) (*Agent, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Get(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v6+json").
-		End()
-	errors = multierror.Append(errors, errs...)
-	if errs != nil {
-		return nil, errors.ErrorOrNil()
+	res := new(Agent)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v6+json"}
+	err := c.getJSON(fmt.Sprintf("/go/api/agents/%s", uuid), headers, res)
+	if err != nil {
+		return nil, err
 	}
-
-	var agent *Agent
-
-	jsonErr := json.Unmarshal([]byte(body), &agent)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-	}
-	return agent, errors.ErrorOrNil()
+	return res, nil
 }
 
 // UpdateAgent - Update some attributes of an agent (uuid).
 // Returns the updated agent properties
 func (c *DefaultClient) UpdateAgent(uuid string, agent *Agent) (*Agent, error) {
-	var errors *multierror.Error
-
-	_, body, errs := c.Request.
-		Patch(c.resolve(fmt.Sprintf("/go/api/agents/%s", uuid))).
-		Set("Accept", "application/vnd.go.cd.v6+json").
-		SendStruct(agent).
-		End()
-	multierror.Append(errors, errs...)
-	if errs != nil {
-		return nil, errors.ErrorOrNil()
+	res := new(Agent)
+	headers := map[string]string{"Accept": "application/vnd.go.cd.v6+json"}
+	err := c.patchJSON(fmt.Sprintf("/go/api/agents/%s", uuid), headers, agent, res)
+	if err != nil {
+		return nil, err
 	}
+	return res, nil
 
-	var updatedAgent *Agent
-
-	jsonErr := json.Unmarshal([]byte(body), &updatedAgent)
-	if jsonErr != nil {
-		errors = multierror.Append(errors, jsonErr)
-	}
-	return updatedAgent, errors.ErrorOrNil()
 }
 
 // DisableAgent - Disables an agent using it's UUID
