@@ -9,7 +9,7 @@ type Client interface {
 	DisableAgent(uuid string) error
 	EnableAgent(uuid string) error
 	DeleteAgent(uuid string) error
-	AgentRunJobHistory(uuid string, offset int) (*JobRunHistory, error)
+	AgentRunJobHistory(uuid string, offset int, pageSize int) (*AgentJobRunHistory, error)
 
 	// Pipeline Groups API
 	GetPipelineGroups() ([]*PipelineGroup, error)

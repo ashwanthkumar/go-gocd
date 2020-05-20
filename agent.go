@@ -28,6 +28,27 @@ type Agent struct {
 	Env       []string `json:"environments,omitempty"`
 }
 
+type AgentJobHistory struct {
+	Name                string                    `json:"job_name"`
+	JobStateTransitions []AgentJobStateTransition `json:"job_state_transitions"`
+	StageName           string                    `json:"stage_name"`
+	StageCounter        string                    `json:"stage_counter"`
+	PipelineName        string                    `json:"pipeline_name"`
+	PipelineCounter     int                       `json:"pipeline_counter"`
+	Result              string                    `json:"result"`
+	ReRun               bool                      `json:"rerun"`
+}
+
+type AgentJobStateTransition struct {
+	StateChangeTime string `json:"state_change_time,omitempty"`
+	State           string `json:"state,omitempty"`
+}
+
+type AgentJobRunHistory struct {
+	Jobs       []*AgentJobHistory `json:"jobs"`
+	Pagination Pagination         `json:"pagination"`
+}
+
 // FreeSpace is required for GoCD API inconsistencies in agent free space scrape.
 type FreeSpace int
 
@@ -128,9 +149,9 @@ func (c *DefaultClient) DeleteAgent(uuid string) error {
 }
 
 // AgentRunJobHistory - Lists the jobs that have executed on an agent.
-func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int) (*JobRunHistory, error) {
-	res := new(JobRunHistory)
-	headers := map[string]string{"Accept": "application/json"}
-	err := c.getJSON(fmt.Sprintf("/go/api/agents/%s/job_run_history/%d", uuid, offset), headers, res)
+func (c *DefaultClient) AgentRunJobHistory(uuid string, offset int, pageSize int) (*AgentJobRunHistory, error) {
+	res := new(AgentJobRunHistory)
+	headers := map[string]string{"Accept": "application/vnd.go.cd+json"}
+	err := c.getJSON(fmt.Sprintf("/go/api/agents/%s/job_run_history?offset=%d&page_size=%d", uuid, offset, pageSize), headers, res)
 	return res, err
 }

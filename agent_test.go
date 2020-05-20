@@ -82,37 +82,31 @@ func TestDeleteAgent(t *testing.T) {
 func TestAgentRunHistory(t *testing.T) {
 	t.Parallel()
 
-	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history/0", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 0, DummyRequestBodyValidator))
+	client, server := newTestAPIClient("/go/api/agents/uuid/job_run_history", serveFileAsJSON(t, "GET", "test-fixtures/get_agent_run_history.json", 0, DummyRequestBodyValidator))
 	defer server.Close()
-	history, err := client.AgentRunJobHistory("uuid", 0)
+	history, err := client.AgentRunJobHistory("uuid", 0, 50)
 	assert.NoError(t, err)
 	jobs := history.Jobs
 	assert.NotNil(t, jobs)
 	assert.Equal(t, 1, len(jobs))
 	job1 := jobs[0]
 	assert.NotNil(t, job1)
-	assert.Equal(t, "5c5c318f-e6d3-4299-9120-7faff6e6030b", job1.AgentUUID)
 	assert.Equal(t, "upload", job1.Name)
-	assert.Equal(t, []JobStateTransition{{
-		StateChangeTime: 1435631497131,
-		ID:              539906,
+	assert.Equal(t, []AgentJobStateTransition{{
+		StateChangeTime: "2019-11-12T00:20:56Z",
 		State:           "Scheduled",
 	}}, job1.JobStateTransitions)
-	assert.Equal(t, 1435631497131, job1.ScheduledDate)
-	assert.Equal(t, "", job1.OriginalJobID)
 	assert.Equal(t, 251, job1.PipelineCounter)
 	assert.Equal(t, false, job1.ReRun)
 	assert.Equal(t, "distributions-all", job1.PipelineName)
 	assert.Equal(t, "Passed", job1.Result)
-	assert.Equal(t, "Completed", job1.State)
-	assert.Equal(t, 100129, job1.ID)
 	assert.Equal(t, "1", job1.StageCounter)
 	assert.Equal(t, "upload-installers", job1.StageName)
 
 	pagination := history.Pagination
 	assert.Equal(t, pagination.Total, 1292)
-	assert.Equal(t, pagination.Offset, 0)
-	assert.Equal(t, pagination.PageSize, 10)
+	assert.Equal(t, pagination.Offset, 10)
+	assert.Equal(t, pagination.PageSize, 50)
 }
 
 func TestFreeSpace(t *testing.T) {
