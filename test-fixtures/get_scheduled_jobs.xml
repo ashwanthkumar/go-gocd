@@ -1,19 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <scheduledJobs>
   <job name="job1" id="6">
     <link rel="self" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job1"/>
+    <link rel="self" href="https://ci.example.com/go/api/feed/pipelines/mypipeline/5/defaultStage/1/job1.xml"/>
+    <link rel="alternate" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job1" title="job1 Job Detail" type="text/html"/>
     <buildLocator>mypipeline/5/defaultStage/1/job1</buildLocator>
   </job>
   <job name="job2" id="7">
     <link rel="self" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job2"/>
+    <link rel="self" href="https://ci.example.com/go/api/feed/pipelines/mypipeline/5/defaultStage/1/job2.xml"/>
+    <link rel="alternate" href="https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job2" title="job2 Job Detail" type="text/html"/>
     <buildLocator>mypipeline/5/defaultStage/1/job2</buildLocator>
-    <environment>FT</environment>
-    <resources>
-      <resource><![CDATA[FT]]></resource>
-      <resource><![CDATA[FIREFOX]]></resource>
-    </resources>
-    <environmentVariables>
-      <variable name="DEPLOY_ENV">ft</variable>
-      <variable name="DISPLAY">0:99</variable>
-    </environmentVariables>
   </job>
 </scheduledJobs>

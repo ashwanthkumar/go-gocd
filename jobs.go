@@ -64,7 +64,7 @@ func (c *DefaultClient) GetScheduledJobs() ([]*ScheduledJob, error) {
 
 	var jobs ScheduledJobsResponse
 	_, body, errs := c.Request.
-		Get(c.resolve("/go/api/jobs/scheduled.xml")).
+		Get(c.resolve("/go/api/feed/jobs/scheduled.xml")).
 		End()
 	if errs != nil {
 		errors = multierror.Append(errors, errs...)

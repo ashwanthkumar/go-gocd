@@ -9,7 +9,7 @@ import (
 
 func TestGetScheduledJobs(t *testing.T) {
 	t.Parallel()
-	client, server := newTestAPIClient("/go/api/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
+	client, server := newTestAPIClient("/go/api/feed/jobs/scheduled.xml", serveFileAsXML(t, "GET", "test-fixtures/get_scheduled_jobs.xml"))
 	defer server.Close()
 	jobs, err := client.GetScheduledJobs()
 	if err != nil {
@@ -25,13 +25,6 @@ func TestGetScheduledJobs(t *testing.T) {
 	assert.Equal(t, "6", job1.JobID)
 	assert.Equal(t, "mypipeline/5/defaultStage/1/job1", job1.BuildLocator)
 	assert.Equal(t, "https://ci.example.com/go/tab/build/detail/mypipeline/5/defaultStage/1/job1", job1.JobURL())
-
-	job2 := jobs[1]
-	assert.Equal(t, "FT", job2.Environment)
-	assert.Equal(t, []ScheduledJobResource{
-		{Name: "FT"},
-		{Name: "FIREFOX"},
-	}, job2.RawResources)
 }
 
 func TestGetJobHistory(t *testing.T) {
